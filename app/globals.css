@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #fef9ee;
+  --paper-soft: #f8f3e8;
+  --paper-muted: #f2ede2;
+  --ink: #1d1c15;
+  --ink-muted: #5b403e;
+  --burgundy: #980012;
+  --burgundy-deep: #6d000a;
+  --burgundy-press: #7a0e13;
+  --burgundy-bright: #be1e24;
+  --amber: #fd983f;
+  --amber-deep: #924c00;
+  --amber-soft: #ffb780;
+  --cream-blush: #ffdad6;
+  --cream-peach: #ffdcc4;
+  --bistro: #323029;
+  --footer: #1a1914;
+  --open: #34d399;
+  --open-text: #059669;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-fast: 180ms;
+  --motion-med: 320ms;
+  --motion-slow: 700ms;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-soft: var(--paper-soft);
+  --color-paper-muted: var(--paper-muted);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-burgundy: var(--burgundy);
+  --color-burgundy-deep: var(--burgundy-deep);
+  --color-burgundy-press: var(--burgundy-press);
+  --color-burgundy-bright: var(--burgundy-bright);
+  --color-amber: var(--amber);
+  --color-amber-deep: var(--amber-deep);
+  --color-amber-soft: var(--amber-soft);
+  --color-cream-blush: var(--cream-blush);
+  --color-cream-peach: var(--cream-peach);
+  --color-bistro: var(--bistro);
+  --color-footer: var(--footer);
+  --color-open: var(--open);
+  --color-open-text: var(--open-text);
+  --font-display: var(--font-epilogue);
+  --font-label: var(--font-space-grotesk);
+  --font-body: var(--font-be-vietnam);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-be-vietnam), system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-epilogue), system-ui, sans-serif;
+}
+
+.font-label {
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+}
+
+.font-body {
+  font-family: var(--font-be-vietnam), system-ui, sans-serif;
+}
+
+.btn-burgundy {
+  background: var(--burgundy);
+  color: white;
+  box-shadow: 0 3px 0 var(--burgundy-press);
+  border-radius: 9999px;
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: transform var(--motion-fast) var(--ease-out-soft),
+    box-shadow var(--motion-fast) var(--ease-out-soft);
+}
+
+.btn-burgundy:hover {
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 var(--burgundy-press);
+}
+
+.btn-burgundy:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 var(--burgundy-press);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-burgundy:hover,
+  .btn-burgundy:active {
+    transform: none;
+  }
+}
