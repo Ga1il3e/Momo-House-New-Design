@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { useState } from "react";
@@ -19,6 +20,15 @@ export function DualPortalHero() {
       <h1 className="sr-only">
         Momo House — Authentic Paris et Himalayan Gateway
       </h1>
+
+      {/* Mobile chooser label */}
+      <div className="flex items-center justify-center gap-2 px-4 pb-2 pt-4 text-paper lg:hidden">
+        <span className="size-2 rounded-full bg-amber" />
+        <span className="font-label text-xs uppercase tracking-[1.6px] text-paper/90">
+          Choisissez votre maison
+        </span>
+      </div>
+
       <div className="pointer-events-none absolute inset-x-0 top-4 z-10 hidden items-center justify-between px-12 text-paper lg:flex">
         <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-amber" />
@@ -38,7 +48,7 @@ export function DualPortalHero() {
         </span>
       </div>
 
-      <div className="grid min-h-[704px] lg:grid-cols-2">
+      <div className="grid max-lg:max-h-[min(85vh,820px)] max-lg:overflow-y-auto lg:min-h-[704px] lg:grid-cols-2 lg:max-h-none lg:overflow-visible">
         <Portal
           house={montmartre}
           accentDot="bg-burgundy"
@@ -48,6 +58,7 @@ export function DualPortalHero() {
           isHovered={hovered === "montmartre"}
           isDimmed={hovered === "poissonniere"}
           onHoverChange={(v) => setHovered(v ? "montmartre" : null)}
+          priority
         />
         <Portal
           house={poissonniere}
@@ -73,6 +84,7 @@ function Portal({
   isHovered,
   isDimmed,
   onHoverChange,
+  priority = false,
 }: {
   house: House;
   accentDot: string;
@@ -82,25 +94,29 @@ function Portal({
   isHovered: boolean;
   isDimmed: boolean;
   onHoverChange: (hovered: boolean) => void;
+  priority?: boolean;
 }) {
   const reduced = usePrefersReducedMotion();
 
   return (
-    <article
-      className={`relative flex min-h-[560px] flex-col justify-end overflow-hidden border-b border-paper/20 p-8 sm:p-16 lg:min-h-[704px] lg:border-b-0 lg:border-r transition-[filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+    <motion.article
+      className={`relative flex min-h-[min(42vh,340px)] flex-col justify-end overflow-hidden border-b border-paper/20 p-5 sm:min-h-[380px] sm:p-10 lg:min-h-[704px] lg:border-b-0 lg:border-r lg:p-16 transition-[filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
         isDimmed && !reduced ? "brightness-[0.72] saturate-[0.85]" : ""
       }`}
       onMouseEnter={() => onHoverChange(true)}
       onMouseLeave={() => onHoverChange(false)}
+      onTouchStart={() => onHoverChange(true)}
+      whileTap={reduced ? undefined : { scale: 0.995 }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={house.facadeImage}
         alt={house.name}
-        className={`absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        fill
+        priority={priority}
+        sizes="(max-width: 1023px) 100vw, 50vw"
+        className={`object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           isHovered && !reduced ? "scale-[1.06]" : "scale-100"
         }`}
-        decoding="async"
       />
       <div
         className={`absolute inset-0 bg-gradient-to-t from-bistro via-[rgba(50,48,41,0.65)] to-[rgba(50,48,41,0.3)] transition-opacity duration-500 ${
@@ -122,19 +138,19 @@ function Portal({
         <span className="inline-flex items-center gap-2 rounded-full border border-[rgba(228,190,186,0.4)] bg-[rgba(248,243,232,0.9)] px-3 py-1 backdrop-blur-sm">
           <span className={`size-1.5 rounded-full ${accentDot}`} />
           <span
-            className={`font-label text-sm font-medium uppercase tracking-[0.8px] ${accentText}`}
+            className={`font-label text-xs font-medium uppercase tracking-[0.8px] sm:text-sm ${accentText}`}
           >
             MAISON {house.number}
           </span>
         </span>
 
-        <h2 className="font-display mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">
+        <h2 className="font-display mt-2 text-3xl font-extrabold tracking-tight sm:mt-3 sm:text-4xl lg:text-5xl">
           Momo House
           <br />
           <span className="text-amber-soft">{house.shortName}</span>
         </h2>
 
-        <p className="mt-3 flex items-start gap-2 text-sm text-paper/90 sm:text-base">
+        <p className="mt-2 hidden items-start gap-2 text-sm text-paper/90 sm:mt-3 sm:flex sm:text-base">
           <Icon
             src="/icons/icon-pin.svg"
             width={12}
@@ -144,16 +160,16 @@ function Portal({
           {house.address} · {house.district}
         </p>
 
-        <p className="mt-2 flex items-center gap-2 font-label text-sm text-open sm:text-base">
+        <p className="mt-2 flex items-center gap-2 font-label text-xs text-open sm:text-sm lg:text-base">
           <span className="size-2 rounded-full bg-open" />
           {house.statusLabel}
         </p>
 
-        <p className="mt-4 max-w-md text-sm leading-6 text-paper/80 sm:text-base">
+        <p className="mt-3 hidden max-w-md text-sm leading-6 text-paper/80 sm:block lg:text-base">
           {house.portalBlurb}
         </p>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-paper/25 pt-4">
+        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-paper/25 pt-3 sm:mt-6 sm:gap-3 sm:pt-4">
           <motion.div
             whileHover={reduced ? undefined : { scale: 1.04, y: -2 }}
             whileTap={reduced ? undefined : { scale: 0.98 }}
@@ -161,7 +177,7 @@ function Portal({
           >
             <Link
               href={enterHref}
-              className="inline-flex items-center gap-2 rounded-full bg-paper px-6 py-3 font-label text-sm font-bold uppercase text-ink shadow-md"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-paper px-5 py-2.5 font-label text-xs font-bold uppercase text-ink shadow-md sm:px-6 sm:text-sm"
             >
               ENTRER
               <Icon
@@ -174,23 +190,18 @@ function Portal({
           </motion.div>
           <a
             href={house.phoneHref}
-            className="rounded-full border border-paper/50 bg-bistro/40 px-5 py-3 font-label text-sm font-medium uppercase text-paper backdrop-blur-sm transition hover:bg-bistro/60"
+            className="inline-flex min-h-11 items-center rounded-full border border-paper/50 bg-bistro/40 px-4 py-2.5 font-label text-xs font-medium uppercase text-paper backdrop-blur-sm transition hover:bg-bistro/60 sm:px-5 sm:text-sm"
           >
-            APPELER ↗
+            APPELER
           </a>
           <Link
             href={`/reservation?maison=${house.id}`}
-            className="ml-auto font-label text-sm font-medium uppercase tracking-[0.8px] text-amber-soft underline transition hover:text-amber"
+            className="font-label text-xs font-medium uppercase tracking-[0.8px] text-amber-soft underline transition hover:text-amber sm:ml-auto sm:text-sm"
           >
-            RÉSERVER ICI
+            RÉSERVER
           </Link>
         </div>
-
-        <div className="mt-4 flex justify-between font-label text-xs uppercase tracking-[1.6px] text-paper/60 sm:text-sm">
-          <span>{house.tags[0]}</span>
-          <span>{house.tags[1]}</span>
-        </div>
       </div>
-    </article>
+    </motion.article>
   );
 }

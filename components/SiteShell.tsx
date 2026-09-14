@@ -43,7 +43,8 @@ function resolveChrome(pathname: string): {
     };
   }
 
-  return { variant: "house" };
+  // Reservation, contact, legal — shared chrome without a forced house context
+  return { variant: "home" };
 }
 
 export function SiteShell({ children }: { children: React.ReactNode }) {

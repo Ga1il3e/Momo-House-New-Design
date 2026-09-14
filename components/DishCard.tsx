@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "motion/react";
 import { usePrefersReducedMotion } from "@/components/motion/usePrefersReducedMotion";
 import { tagClass, type DishCard as DishCardType } from "@/lib/menu";
@@ -19,15 +20,19 @@ export function DishCard({ dish }: { dish: DishCardType }) {
     >
       <div>
         <div className="relative mb-3 h-48 overflow-hidden rounded-xl bg-paper-muted">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <motion.img
-            src={dish.image}
-            alt={dish.name}
-            className="absolute inset-0 h-full w-full object-cover"
-            decoding="async"
+          <motion.div
+            className="absolute inset-0"
             whileHover={reduced ? undefined : { scale: 1.08 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          />
+          >
+            <Image
+              src={dish.image}
+              alt={dish.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </motion.div>
           <span
             className={`font-label absolute right-3 top-3 rounded-full px-2.5 py-1 text-xs font-bold uppercase ${tagClass(dish.tagTone)}`}
           >

@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { HouseId } from "@/lib/houses";
 import { houses } from "@/lib/houses";
 import {
@@ -16,11 +17,67 @@ type HeaderProps = {
   activeHouse?: HouseId;
 };
 
+function HouseSwitcher({
+  montmartreActive,
+  poissonniereActive,
+  compact = false,
+}: {
+  montmartreActive: boolean;
+  poissonniereActive: boolean;
+  compact?: boolean;
+}) {
+  return (
+    <div
+      className={`relative flex items-center font-label font-bold uppercase tracking-wide ${
+        compact ? "gap-1.5 text-[10px]" : "gap-2 text-xs sm:text-[11px]"
+      }`}
+    >
+      <Link
+        href="/montmartre"
+        className={`relative px-1 py-0.5 transition ${
+          montmartreActive
+            ? "text-burgundy"
+            : "text-ink-muted hover:text-burgundy"
+        }`}
+      >
+        {compact ? "Montm." : "Montmartre"}
+        {montmartreActive && (
+          <motion.span
+            layoutId="house-active"
+            className="absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-burgundy"
+            transition={{ type: "spring", stiffness: 420, damping: 32 }}
+          />
+        )}
+      </Link>
+      <span className="text-[rgba(152,0,18,0.35)]" aria-hidden>
+        |
+      </span>
+      <Link
+        href="/poissonniere"
+        className={`relative px-1 py-0.5 transition ${
+          poissonniereActive
+            ? "text-burgundy"
+            : "text-ink-muted hover:text-burgundy"
+        }`}
+      >
+        {compact ? "Poiss." : "Poissonnière"}
+        {poissonniereActive && (
+          <motion.span
+            layoutId="house-active"
+            className="absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-burgundy"
+            transition={{ type: "spring", stiffness: 420, damping: 32 }}
+          />
+        )}
+      </Link>
+    </div>
+  );
+}
+
 export function Header({ variant = "home", activeHouse }: HeaderProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const reduced = usePrefersReducedMotion();
-  const isHouse = variant === "house";
+  const isHouse = variant === "house" && Boolean(activeHouse);
 
   const homeNav = [{ href: "/#histoire", label: "NOTRE HISTOIRE" }];
 
@@ -28,7 +85,7 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
     {
       href: activeHouse
         ? houses[activeHouse].carteHref
-        : "/poissonniere/carte",
+        : "/#maisons",
       label: "LA CARTE",
     },
     { href: "/#histoire", label: "NOTRE HISTOIRE" },
@@ -41,92 +98,94 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
   const poissonniereActive =
     activeHouse === "poissonniere" || pathname.startsWith("/poissonniere");
 
+  const reserveHref =
+    isHouse && activeHouse
+      ? `/reservation?maison=${activeHouse}`
+      : "/reservation";
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   return (
     <header className="sticky top-0 z-40 border-b border-[rgba(228,190,186,0.35)] bg-paper/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-4 px-4 py-2.5 sm:px-12 sm:py-3">
-        <div className="flex min-w-0 items-center gap-3 sm:gap-5">
+      <div className="mx-auto grid max-w-[1280px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2.5 sm:gap-4 sm:px-12 sm:py-3">
+        {/* Left: logo */}
+        <div className="flex min-w-0 items-center justify-start">
           <Link href="/" className="flex shrink-0 items-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/assets/logo-wordmark.png"
               alt="Momo House"
               width={140}
               height={72}
-              className={`w-auto object-contain ${
-                isHouse ? "h-10 sm:h-11" : "h-12 sm:h-[3.75rem]"
+              priority
+              className={`h-auto w-auto object-contain ${
+                isHouse ? "h-9 sm:h-11" : "h-10 sm:h-[3.75rem]"
               }`}
-              decoding="async"
             />
           </Link>
+        </div>
 
-          <div className="relative hidden items-center gap-2 font-label text-xs font-bold uppercase tracking-wide sm:flex sm:text-[11px]">
-            <Link
-              href="/montmartre"
-              className={`relative px-1 py-0.5 transition ${
-                montmartreActive
-                  ? "text-burgundy"
-                  : "text-ink-muted hover:text-burgundy"
-              }`}
-            >
-              Montmartre
-              {montmartreActive && (
-                <motion.span
-                  layoutId="house-active"
-                  className="absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-burgundy"
-                  transition={{ type: "spring", stiffness: 420, damping: 32 }}
-                />
-              )}
-            </Link>
-            <span className="text-[rgba(152,0,18,0.35)]" aria-hidden>
-              |
-            </span>
-            <Link
-              href="/poissonniere"
-              className={`relative px-1 py-0.5 transition ${
-                poissonniereActive
-                  ? "text-burgundy"
-                  : "text-ink-muted hover:text-burgundy"
-              }`}
-            >
-              Poissonnière
-              {poissonniereActive && (
-                <motion.span
-                  layoutId="house-active"
-                  className="absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-burgundy"
-                  transition={{ type: "spring", stiffness: 420, damping: 32 }}
-                />
-              )}
-            </Link>
+        {/* Center: maisons */}
+        <div className="flex justify-center px-1">
+          <div className="sm:hidden">
+            <HouseSwitcher
+              montmartreActive={montmartreActive}
+              poissonniereActive={poissonniereActive}
+              compact
+            />
+          </div>
+          <div className="hidden sm:block">
+            <HouseSwitcher
+              montmartreActive={montmartreActive}
+              poissonniereActive={poissonniereActive}
+            />
           </div>
         </div>
 
-        <nav className="hidden items-center gap-8 lg:flex">
-          {nav.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="font-label text-sm font-medium uppercase tracking-wide text-ink-muted transition duration-200 hover:text-burgundy"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-3">
+        {/* Right: nav + CTA + menu */}
+        <div className="flex items-center justify-end gap-2 sm:gap-3">
+          <nav className="hidden items-center gap-6 lg:flex xl:gap-8">
+            {nav.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="font-label text-sm font-medium uppercase tracking-wide text-ink-muted transition duration-200 hover:text-burgundy"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
           <Link
-            href={
-              isHouse && activeHouse
-                ? `/reservation?maison=${activeHouse}`
-                : "/reservation"
-            }
-            className="btn-burgundy hidden items-center gap-2 px-5 py-2.5 text-sm sm:inline-flex"
+            href={reserveHref}
+            className="btn-burgundy hidden items-center gap-2 px-4 py-2.5 text-xs sm:inline-flex sm:px-5 sm:text-sm"
           >
-            RÉSERVER UNE TABLE
+            RÉSERVER
+          </Link>
+          <Link
+            href={reserveHref}
+            className="btn-burgundy inline-flex px-3 py-2 text-[10px] sm:hidden"
+            aria-label="Réserver une table"
+          >
+            RÉSERVER
           </Link>
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(228,190,186,0.5)] lg:hidden"
-            aria-label="Ouvrir le menu"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(228,190,186,0.5)] lg:hidden"
+            aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
           >
@@ -146,20 +205,28 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
             className="overflow-hidden border-t border-[rgba(228,190,186,0.35)] bg-paper lg:hidden"
           >
             <div className="flex flex-col gap-3 px-4 py-4">
-              <div className="mb-1 flex items-center gap-2 font-label text-xs font-bold uppercase tracking-wide">
+              <p className="font-label text-[10px] font-bold uppercase tracking-[1.5px] text-burgundy">
+                Choisissez votre maison
+              </p>
+              <div className="grid grid-cols-2 gap-2">
                 <Link
                   href="/montmartre"
-                  className={montmartreActive ? "text-burgundy" : "text-ink"}
+                  className={`rounded-2xl border px-4 py-3.5 text-center font-label text-xs font-bold uppercase tracking-wide transition ${
+                    montmartreActive
+                      ? "border-burgundy bg-burgundy text-paper"
+                      : "border-[rgba(228,190,186,0.5)] bg-paper-soft text-ink"
+                  }`}
                   onClick={() => setOpen(false)}
                 >
                   Montmartre
                 </Link>
-                <span className="text-[rgba(152,0,18,0.35)]" aria-hidden>
-                  |
-                </span>
                 <Link
                   href="/poissonniere"
-                  className={poissonniereActive ? "text-burgundy" : "text-ink"}
+                  className={`rounded-2xl border px-4 py-3.5 text-center font-label text-xs font-bold uppercase tracking-wide transition ${
+                    poissonniereActive
+                      ? "border-burgundy bg-burgundy text-paper"
+                      : "border-[rgba(228,190,186,0.5)] bg-paper-soft text-ink"
+                  }`}
                   onClick={() => setOpen(false)}
                 >
                   Poissonnière
@@ -169,19 +236,15 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="font-label text-sm font-medium uppercase text-ink"
+                  className="min-h-11 font-label text-sm font-medium uppercase leading-[44px] text-ink"
                   onClick={() => setOpen(false)}
                 >
                   {item.label}
                 </Link>
               ))}
               <Link
-                href={
-                  isHouse && activeHouse
-                    ? `/reservation?maison=${activeHouse}`
-                    : "/reservation"
-                }
-                className="btn-burgundy inline-flex justify-center px-5 py-3 text-sm"
+                href={reserveHref}
+                className="btn-burgundy inline-flex min-h-11 justify-center px-5 py-3 text-sm"
                 onClick={() => setOpen(false)}
               >
                 RÉSERVER UNE TABLE

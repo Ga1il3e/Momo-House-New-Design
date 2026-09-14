@@ -391,7 +391,7 @@ export const cartes: Record<HouseId, CarteData> = {
         badge: "SIGNATURE",
         description:
           "Bœuf français mariné au gingembre, oignons rouges, coriandre et 7 épices himalayennes.",
-        image: "/assets/momo-3d.png",
+        image: "/assets/pois-dish-1.png",
       },
       {
         id: "sig-poulet",
@@ -400,7 +400,7 @@ export const cartes: Record<HouseId, CarteData> = {
         badge: "DOUX",
         description:
           "Effiloché de poulet tendre, cardamome verte, poireaux et bouillon concentré.",
-        image: "/assets/momo-3d.png",
+        image: "/assets/pois-dish-2.png",
       },
       {
         id: "sig-paneer",
@@ -409,7 +409,7 @@ export const cartes: Record<HouseId, CarteData> = {
         badge: "VÉGÉTARIEN",
         description:
           "Paneer artisanal, pousses d'épinards, shiitaké et noix de muscade.",
-        image: "/assets/momo-3d.png",
+        image: "/assets/pois-dish-3.png",
       },
       {
         id: "sig-porc",
@@ -426,7 +426,7 @@ export const cartes: Record<HouseId, CarteData> = {
         badge: "100% VÉGÉTAL",
         description:
           "Légumes de saison, chou, carotte et épices douces — sans produit animal.",
-        image: "/assets/momo-3d.png",
+        image: "/assets/kothey-3d.png",
       },
       {
         id: "sig-mixte",
@@ -434,7 +434,7 @@ export const cartes: Record<HouseId, CarteData> = {
         price: "14,50 €",
         description:
           "10 pièces mixtes confectionnées à la commande dans nos paniers de saule et bambou.",
-        image: "/assets/momo-3d.png",
+        image: "/assets/enseigne.png",
       },
     ],
     cooking: sharedCooking,
@@ -446,14 +446,14 @@ export const cartes: Record<HouseId, CarteData> = {
         price: "13,50 €",
         badge: "INCONTOURNABLE",
         note: "Option : Bœuf effiloché, Poulet fermier ou Tofu grillé",
-        image: "/assets/thukpa-3d.png",
+        image: "/assets/pois-dish-4.png",
       },
       {
         id: "hot-shabaley",
         name: "Shabaley Doré",
         price: "8,00 €",
         note: "2 grands chaussons croustillants",
-        image: "/assets/shabaley-3d.png",
+        image: "/assets/pois-dish-5.png",
       },
       {
         id: "hot-tingmo",
@@ -476,7 +476,7 @@ export const cartes: Record<HouseId, CarteData> = {
         badge: "SIGNATURE",
         description:
           "Bœuf français mariné au gingembre, oignons rouges, coriandre et 7 épices himalayennes.",
-        image: "/assets/momo-3d.png",
+        image: "/assets/dish-boeuf.png",
       },
       {
         id: "m-sig-poulet",
@@ -485,7 +485,7 @@ export const cartes: Record<HouseId, CarteData> = {
         badge: "DOUX",
         description:
           "Effiloché de poulet tendre, cardamome verte, poireaux et bouillon concentré.",
-        image: "/assets/momo-3d.png",
+        image: "/assets/dish-poulet.png",
       },
       {
         id: "m-sig-paneer",
@@ -494,7 +494,7 @@ export const cartes: Record<HouseId, CarteData> = {
         badge: "VÉGÉTARIEN",
         description:
           "Paneer artisanal, pousses d'épinards, shiitaké et noix de muscade.",
-        image: "/assets/momo-3d.png",
+        image: "/assets/dish-paneer.png",
       },
       {
         id: "m-sig-porc",
@@ -511,7 +511,7 @@ export const cartes: Record<HouseId, CarteData> = {
         badge: "SAISON",
         description:
           "Agneau tendre, poivre de Timur, coriandre fraîche et oignons confits.",
-        image: "/assets/momo-3d.png",
+        image: "/assets/kothey-3d.png",
       },
       {
         id: "m-sig-vegan",
@@ -520,7 +520,7 @@ export const cartes: Record<HouseId, CarteData> = {
         badge: "100% VÉGÉTAL",
         description:
           "Légumes de saison, chou, carotte et épices douces — sans produit animal.",
-        image: "/assets/momo-3d.png",
+        image: "/assets/pois-dish-3.png",
       },
       {
         id: "m-sig-mixte",
@@ -528,7 +528,7 @@ export const cartes: Record<HouseId, CarteData> = {
         price: "14,50 €",
         description:
           "10 pièces mixtes confectionnées à la commande dans nos paniers de saule et bambou.",
-        image: "/assets/momo-3d.png",
+        image: "/assets/carte-hero.png",
       },
     ],
     cooking: sharedCooking,
@@ -540,14 +540,14 @@ export const cartes: Record<HouseId, CarteData> = {
         price: "13,50 €",
         badge: "INCONTOURNABLE",
         note: "Option : Bœuf effiloché, Poulet fermier ou Tofu grillé",
-        image: "/assets/thukpa-3d.png",
+        image: "/assets/dish-thukpa.png",
       },
       {
         id: "m-hot-shabaley",
         name: "Shabaley Doré",
         price: "8,00 €",
         note: "2 grands chaussons croustillants",
-        image: "/assets/shabaley-3d.png",
+        image: "/assets/dish-shabaley.png",
       },
       {
         id: "m-hot-tingmo",
@@ -561,7 +561,7 @@ export const cartes: Record<HouseId, CarteData> = {
         name: "Chow Mein Maison",
         price: "12,00 €",
         note: "Nouilles sautées style népalais",
-        image: "/assets/kothey-3d.png",
+        image: "/assets/pois-dish-4.png",
       },
     ],
     drinks: sharedDrinks,

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { DualPortalHero } from "@/components/DualPortalHero";
 import { DishCard } from "@/components/DishCard";
@@ -19,16 +20,17 @@ export default function HomePage() {
         className="mx-auto grid max-w-[1280px] items-center gap-12 px-4 py-20 sm:px-12 lg:grid-cols-12"
       >
         <FadeIn className="lg:col-span-6">
-          <div className="overflow-hidden rounded-2xl border-4 border-[#ede8dd] bg-[#e8f4fc] shadow-2xl">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/assets/brand-signature.jpg"
-              alt="Momo House — le yak des sommets et les momos à la vapeur"
-              width={1024}
-              height={517}
-              className="h-auto w-full object-contain"
-              decoding="async"
-            />
+          <div className="rounded-2xl bg-[#ede8dd]/70 p-1.5 shadow-[0_18px_40px_-12px_rgba(29,28,21,0.35)]">
+            <div className="overflow-hidden rounded-[0.875rem] border-4 border-[#ede8dd] bg-[#e8f4fc]">
+              <Image
+                src="/assets/brand-signature.jpg"
+                alt="Momo House — le yak des sommets et les momos à la vapeur"
+                width={1024}
+                height={517}
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="h-auto w-full object-contain drop-shadow-[0_12px_20px_rgba(29,28,21,0.18)]"
+              />
+            </div>
           </div>
           <div className="mt-4 rounded-2xl border border-[rgba(228,190,186,0.45)] bg-paper px-5 py-4 shadow-sm">
             <p className="font-label text-xs font-bold uppercase tracking-[1.2px] text-burgundy">
@@ -87,7 +89,7 @@ export default function HomePage() {
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link
-              href="/poissonniere/carte"
+              href="/#maisons"
               className="btn-burgundy inline-flex items-center gap-2 px-6 py-3 text-sm"
             >
               DÉCOUVRIR LA CARTE

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useMemo, useState } from "react";
@@ -17,10 +18,10 @@ import { houses } from "@/lib/houses";
 import { montmartreSpecialties } from "@/lib/menu";
 
 const filters = [
-  { id: "all", label: "TOUS NOS PLATS" },
-  { id: "momo", label: "KOTHEY POÊLÉS" },
-  { id: "accompagnements", label: "VAPEUR BAMBOU" },
-  { id: "boissons", label: "BOISSONS & DESSERTS" },
+  { id: "all", label: "TOUS" },
+  { id: "momo", label: "MOMOS" },
+  { id: "accompagnements", label: "PLATS" },
+  { id: "boissons", label: "BOISSONS" },
 ] as const;
 
 export default function MontmartrePage() {
@@ -35,7 +36,7 @@ export default function MontmartrePage() {
     }
     if (filter === "accompagnements") {
       return montmartreSpecialties.filter(
-        (d) => d.category === "accompagnements" || d.category === "momo",
+        (d) => d.category === "accompagnements",
       );
     }
     return montmartreSpecialties.filter((d) => d.category === "boissons");
@@ -109,12 +110,13 @@ export default function MontmartrePage() {
         <FadeIn delay={0.1}>
           <div className="relative overflow-hidden rounded-3xl shadow-xl">
             <div className="relative aspect-[4/5] sm:aspect-[5/6]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/assets/montmartre-facade.png"
+              <Image
+                src={house.heroImage}
                 alt="Façade Momo House Montmartre"
-                className="absolute inset-0 h-full w-full object-cover"
-                decoding="async"
+                fill
+                sizes="(max-width: 1024px) 100vw, 45vw"
+                className="object-cover"
+                priority
               />
             </div>
             <div className="absolute bottom-4 left-4 rounded-xl bg-bistro/90 px-4 py-3 text-paper backdrop-blur-sm">
@@ -202,7 +204,7 @@ export default function MontmartrePage() {
                     key={f.id}
                     type="button"
                     onClick={() => setFilter(f.id)}
-                    className={`relative rounded-full px-4 py-2 font-label text-xs font-bold uppercase tracking-wide transition ${
+                    className={`relative min-h-11 rounded-full px-4 py-2 font-label text-xs font-bold uppercase tracking-wide transition ${
                       active
                         ? "text-white"
                         : "bg-paper-soft text-ink-muted hover:bg-paper-muted"
@@ -288,7 +290,7 @@ export default function MontmartrePage() {
               </ul>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
-                  href="https://maps.google.com/?q=85+Rue+Montmartre+75002+Paris"
+                  href={house.mapsUrl}
                   target="_blank"
                   rel="noreferrer"
                   className="rounded-full border border-burgundy px-5 py-2.5 font-label text-sm font-bold uppercase text-burgundy"
@@ -309,12 +311,13 @@ export default function MontmartrePage() {
             <FadeIn delay={0.08}>
               <div className="relative overflow-hidden rounded-3xl border border-[rgba(228,190,186,0.4)] bg-paper-muted">
                 <div className="relative aspect-[16/10]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/assets/map-placeholder.png"
-                    alt="Plan d'accès Montmartre"
-                    className="absolute inset-0 h-full w-full object-cover"
-                    decoding="async"
+                  <iframe
+                    title="Plan d'accès Montmartre"
+                    src={house.mapsEmbedUrl}
+                    className="absolute inset-0 h-full w-full border-0"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
                   />
                 </div>
               </div>

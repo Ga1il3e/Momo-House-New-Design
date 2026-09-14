@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState, type FormEvent } from "react";
 import { DatePicker } from "@/components/DatePicker";
@@ -20,6 +20,7 @@ function isHouseId(value: string | null): value is HouseId {
 }
 
 export function ReservationExperience() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initial = searchParams.get("maison");
   const reduced = usePrefersReducedMotion();
@@ -36,13 +37,26 @@ export function ReservationExperience() {
   const [email, setEmail] = useState("");
   const [note, setNote] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [minDate, setMinDate] = useState("");
 
   useEffect(() => {
     if (isHouseId(initial)) setHouseId(initial);
   }, [initial]);
 
+  useEffect(() => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    setMinDate(`${y}-${m}-${d}`);
+  }, []);
+
+  function selectHouse(id: HouseId) {
+    setHouseId(id);
+    router.replace(`/reservation?maison=${id}`, { scroll: false });
+  }
+
   const house = houses[houseId];
-  const minDate = new Date().toISOString().slice(0, 10);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -99,18 +113,19 @@ export function ReservationExperience() {
               ✓
             </motion.div>
             <p className="font-label text-sm font-bold uppercase tracking-[2px] text-burgundy">
-              Demande enregistrée
+              Demande locale enregistrée
             </p>
             <h1 className="font-display mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">
-              À très bientôt chez
+              Appelez pour confirmer
               <br />
               <span className="text-burgundy">Maison {house.shortName}</span>
             </h1>
             <p className="mx-auto mt-4 max-w-md text-base leading-7 text-ink-muted">
-              Confirmation locale pour <strong>{name || "votre table"}</strong>
+              Votre demande pour <strong>{name || "votre table"}</strong>
               {date ? ` · ${formatDateFr(date)}` : ""} à {time} · {guests}{" "}
-              {guests > 1 ? "convives" : "convive"} · {space}. Aucune réservation
-              réelle n&apos;a été envoyée — appelez la maison pour confirmer.
+              {guests > 1 ? "convives" : "convive"} · {space} est enregistrée
+              localement. Ce n&apos;est pas une réservation confirmée — appelez
+              la maison pour finaliser.
             </p>
 
             <div className="mx-auto mt-8 overflow-hidden rounded-2xl border border-[rgba(228,190,186,0.4)] bg-white text-left shadow-lg">
@@ -127,20 +142,23 @@ export function ReservationExperience() {
                   <p className="text-sm text-paper/80">{house.address}</p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-3 p-5">
-                <a href={house.phoneHref} className="btn-burgundy px-5 py-2.5 text-sm">
+              <div className="flex flex-col gap-3 p-5 sm:flex-row sm:flex-wrap">
+                <a
+                  href={house.phoneHref}
+                  className="btn-burgundy inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm"
+                >
                   Appeler {house.phone}
                 </a>
                 <Link
                   href={house.enterHref}
-                  className="rounded-full border border-burgundy px-5 py-2.5 font-label text-sm font-medium uppercase text-burgundy"
+                  className="inline-flex items-center justify-center rounded-full border border-burgundy px-5 py-2.5 font-label text-sm font-medium uppercase text-burgundy"
                 >
                   Voir la maison
                 </Link>
                 <button
                   type="button"
                   onClick={reset}
-                  className="rounded-full bg-paper-soft px-5 py-2.5 font-label text-sm font-medium uppercase text-ink-muted"
+                  className="inline-flex items-center justify-center rounded-full bg-paper-soft px-5 py-2.5 font-label text-sm font-medium uppercase text-ink-muted"
                 >
                   Nouvelle demande
                 </button>
@@ -183,7 +201,7 @@ export function ReservationExperience() {
             </div>
           </section>
 
-          <section className="relative -mt-8 px-4 pb-20 sm:px-12">
+          <section className="relative -mt-8 px-4 pb-28 sm:px-12 lg:pb-20">
             <form
               onSubmit={handleSubmit}
               className="mx-auto max-w-[1100px] space-y-8"
@@ -212,7 +230,7 @@ export function ReservationExperience() {
                         <motion.button
                           key={h.id}
                           type="button"
-                          onClick={() => setHouseId(h.id)}
+                          onClick={() => selectHouse(h.id)}
                           animate={
                             reduced
                               ? undefined
@@ -337,7 +355,7 @@ export function ReservationExperience() {
                                   key={t}
                                   type="button"
                                   onClick={() => setTime(t)}
-                                  className={`rounded-xl px-3 py-3 font-label text-sm font-bold transition ${
+                                  className={`min-h-11 rounded-xl px-3 py-3 font-label text-sm font-bold transition ${
                                     time === t
                                       ? "bg-burgundy text-white shadow-[0_2px_0_var(--burgundy-press)]"
                                       : "bg-paper-soft text-ink-muted hover:bg-paper-muted"
@@ -347,6 +365,9 @@ export function ReservationExperience() {
                                 </button>
                               ))}
                             </div>
+                            <p className="mt-2 text-xs leading-5 text-ink-muted">
+                              Horaires {house.shortName} : {house.hours}
+                            </p>
                           </div>
 
                           <div>
@@ -396,7 +417,7 @@ export function ReservationExperience() {
                                   key={value}
                                   type="button"
                                   onClick={() => setSpace(value)}
-                                  className={`rounded-2xl px-4 py-4 text-left transition ${
+                                  className={`min-h-11 rounded-2xl px-4 py-4 text-left transition ${
                                     space === value
                                       ? "bg-burgundy text-white shadow-[0_3px_0_var(--burgundy-press)]"
                                       : "border border-[rgba(228,190,186,0.5)] bg-paper-soft text-ink hover:border-burgundy/40"
@@ -548,6 +569,24 @@ export function ReservationExperience() {
                   </div>
                 </aside>
               </div>
+
+              {/* Sticky mobile bottom bar */}
+              <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[rgba(228,190,186,0.45)] bg-paper/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md lg:hidden">
+                <div className="mx-auto flex max-w-[1100px] gap-3">
+                  <button
+                    type="submit"
+                    className="btn-burgundy min-h-11 flex-1 px-4 py-3 text-sm"
+                  >
+                    Confirmer
+                  </button>
+                  <a
+                    href={house.phoneHref}
+                    className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-burgundy px-4 py-3 font-label text-sm font-bold uppercase tracking-wide text-burgundy"
+                  >
+                    Appeler
+                  </a>
+                </div>
+              </div>
             </form>
           </section>
         </motion.div>
@@ -569,16 +608,34 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
   );
 }
 
+const MONTHS_FR = [
+  "janvier",
+  "février",
+  "mars",
+  "avril",
+  "mai",
+  "juin",
+  "juillet",
+  "août",
+  "septembre",
+  "octobre",
+  "novembre",
+  "décembre",
+];
+
+const WEEKDAYS_FR = [
+  "dimanche",
+  "lundi",
+  "mardi",
+  "mercredi",
+  "jeudi",
+  "vendredi",
+  "samedi",
+];
+
 function formatDateFr(iso: string) {
   const [y, m, d] = iso.split("-").map(Number);
   if (!y || !m || !d) return iso;
-  try {
-    return new Intl.DateTimeFormat("fr-FR", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-    }).format(new Date(y, m - 1, d));
-  } catch {
-    return iso;
-  }
+  const date = new Date(y, m - 1, d);
+  return `${WEEKDAYS_FR[date.getDay()]} ${d} ${MONTHS_FR[m - 1]}`;
 }

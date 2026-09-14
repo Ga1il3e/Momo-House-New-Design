@@ -8,7 +8,7 @@ import { houses, type House } from "@/lib/houses";
 
 const quickNav = [
   { href: "/", label: "Accueil" },
-  { href: "/montmartre/carte", label: "La Carte Complète" },
+  { href: "/#maisons", label: "La Carte — choisir une maison" },
   { href: "/#maisons", label: "Plan d'accès & Itinéraires" },
   { href: "/#histoire", label: "Secrets de fabrication des Momos" },
   { href: "/reservation", label: "Réservation en ligne" },
@@ -46,7 +46,7 @@ export function Footer() {
               </h4>
               <ul className="mt-5 space-y-3">
                 {quickNav.map((item) => (
-                  <li key={item.href}>
+                  <li key={item.label}>
                     <Link
                       href={item.href}
                       className="text-sm text-paper/75 transition hover:text-amber-soft"
@@ -70,8 +70,8 @@ export function Footer() {
         <div className="border-t border-white/10">
           <div className="mx-auto flex max-w-[1280px] flex-col gap-3 px-4 py-5 text-xs text-paper/50 sm:flex-row sm:items-center sm:justify-between sm:px-12">
             <p>
-              © 2024 Momo House Paris. Artisans du goût népalais & tibétain au
-              cœur de Paris.
+              © {new Date().getFullYear()} Momo House Paris. Artisans du goût
+              népalais & tibétain au cœur de Paris.
             </p>
             <div className="flex flex-wrap gap-4 font-label uppercase tracking-wide">
               <Link href="/contact" className="transition hover:text-amber-soft">

@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   easeOut,
   usePrefersReducedMotion,
@@ -51,24 +51,38 @@ export function DatePicker({
   minDate,
 }: DatePickerProps) {
   const reduced = usePrefersReducedMotion();
-  const todayIso = useMemo(() => {
+  const [todayIso, setTodayIso] = useState<string | null>(null);
+
+  useEffect(() => {
     const now = new Date();
-    return toIso(now.getFullYear(), now.getMonth(), now.getDate());
+    setTodayIso(toIso(now.getFullYear(), now.getMonth(), now.getDate()));
   }, []);
 
-  const today = useMemo(() => parseIso(todayIso)!, [todayIso]);
+  const selected = parseIso(value);
+  const today = useMemo(
+    () => (todayIso ? parseIso(todayIso) : null),
+    [todayIso],
+  );
   const min = useMemo(() => {
+    if (!today) return null;
     const parsed = minDate ? parseIso(minDate) : null;
     return startOfDay(parsed ?? today);
   }, [minDate, today]);
-  const selected = parseIso(value);
 
-  const [view, setView] = useState(() => {
-    const base = selected ?? today;
-    return new Date(base.getFullYear(), base.getMonth(), 1);
-  });
+  const [view, setView] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (!todayIso) return;
+    const seed = selected ?? parseIso(todayIso);
+    if (!seed) return;
+    setView(new Date(seed.getFullYear(), seed.getMonth(), 1));
+    // Seed once when the client date is known.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot seed on todayIso
+  }, [todayIso]);
 
   const cells = useMemo(() => {
+    if (!view || !today || !min) return [];
+
     const year = view.getFullYear();
     const month = view.getMonth();
     const first = new Date(year, month, 1);
@@ -124,21 +138,27 @@ export function DatePicker({
     return items;
   }, [view, min, selected, today]);
 
-  const canGoPrev = (() => {
-    const prevMonth = new Date(view.getFullYear(), view.getMonth(), 0);
-    return prevMonth >= new Date(min.getFullYear(), min.getMonth(), 1);
-  })();
+  const canGoPrev =
+    view && min
+      ? (() => {
+          const prevMonth = new Date(view.getFullYear(), view.getMonth(), 0);
+          return prevMonth >= new Date(min.getFullYear(), min.getMonth(), 1);
+        })()
+      : false;
 
   function shiftMonth(delta: number) {
-    setView((v) => new Date(v.getFullYear(), v.getMonth() + delta, 1));
+    setView((v) =>
+      v ? new Date(v.getFullYear(), v.getMonth() + delta, 1) : v,
+    );
   }
 
   const label = selected
-    ? new Intl.DateTimeFormat("fr-FR", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-      }).format(selected)
+    ? (() => {
+        const y = selected.getFullYear();
+        const m = MONTHS[selected.getMonth()];
+        const d = selected.getDate();
+        return `${d} ${m} ${y}`;
+      })()
     : "Choisissez un jour";
 
   return (
@@ -165,8 +185,9 @@ export function DatePicker({
           <button
             type="button"
             aria-label="Mois suivant"
+            disabled={!view}
             onClick={() => shiftMonth(1)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-lg transition hover:bg-white/20"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-lg transition hover:bg-white/20 disabled:opacity-30"
           >
             ›
           </button>
@@ -174,93 +195,106 @@ export function DatePicker({
       </div>
 
       <div className="px-4 pb-4 pt-3">
-        <p className="mb-3 text-center font-display text-base font-semibold text-ink">
-          {MONTHS[view.getMonth()]} {view.getFullYear()}
-        </p>
-
-        <div className="mb-2 grid grid-cols-7 gap-1">
-          {WEEKDAYS.map((d) => (
-            <div
-              key={d}
-              className="py-1 text-center font-label text-[10px] font-bold uppercase tracking-wide text-ink-muted/70"
-            >
-              {d}
-            </div>
-          ))}
-        </div>
-
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={`${view.getFullYear()}-${view.getMonth()}`}
-            className="grid grid-cols-7 gap-1"
-            initial={reduced ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={reduced ? undefined : { opacity: 0 }}
-            transition={{
-              duration: reduced ? 0 : 0.2,
-              ease: easeOut,
-            }}
+        {!view || !today || !min ? (
+          <div
+            className="flex h-[280px] items-center justify-center font-label text-xs uppercase tracking-wide text-ink-muted"
+            aria-hidden
           >
-            {cells.map((cell, i) => {
-              if (cell.day === null) {
-                return <div key={`empty-${i}`} className="aspect-square" />;
-              }
+            Chargement…
+          </div>
+        ) : (
+          <>
+            <p className="mb-3 text-center font-display text-base font-semibold text-ink">
+              {MONTHS[view.getMonth()]} {view.getFullYear()}
+            </p>
 
-              return (
-                <button
-                  key={cell.iso}
-                  type="button"
-                  disabled={cell.disabled}
-                  onClick={() => cell.iso && onChange(cell.iso)}
-                  className={`aspect-square rounded-xl font-label text-sm font-semibold transition ${
-                    cell.isSelected
-                      ? "bg-burgundy text-white shadow-[0_2px_0_var(--burgundy-press)]"
-                      : cell.isToday
-                        ? "border border-burgundy/40 bg-cream-blush text-burgundy"
-                        : cell.disabled
-                          ? "cursor-not-allowed text-ink-muted/30"
-                          : "text-ink hover:bg-cream-peach/70"
-                  }`}
+            <div className="mb-2 grid grid-cols-7 gap-1">
+              {WEEKDAYS.map((d) => (
+                <div
+                  key={d}
+                  className="py-1 text-center font-label text-[10px] font-bold uppercase tracking-wide text-ink-muted/70"
                 >
-                  {cell.day}
-                </button>
-              );
-            })}
-          </motion.div>
-        </AnimatePresence>
+                  {d}
+                </div>
+              ))}
+            </div>
 
-        <div className="mt-3 flex items-center justify-between gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              const iso = toIso(
-                today.getFullYear(),
-                today.getMonth(),
-                today.getDate(),
-              );
-              if (today >= min) {
-                onChange(iso);
-                setView(new Date(today.getFullYear(), today.getMonth(), 1));
-              }
-            }}
-            className="font-label text-[10px] font-bold uppercase tracking-wide text-burgundy hover:underline"
-          >
-            Aujourd&apos;hui
-          </button>
-          {value ? (
-            <button
-              type="button"
-              onClick={() => onChange("")}
-              className="font-label text-[10px] font-bold uppercase tracking-wide text-ink-muted hover:underline"
-            >
-              Effacer
-            </button>
-          ) : (
-            <span className="font-label text-[10px] uppercase tracking-wide text-ink-muted/50">
-              Sélection requise
-            </span>
-          )}
-        </div>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={`${view.getFullYear()}-${view.getMonth()}`}
+                className="grid grid-cols-7 gap-1"
+                initial={reduced ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={reduced ? undefined : { opacity: 0 }}
+                transition={{
+                  duration: reduced ? 0 : 0.2,
+                  ease: easeOut,
+                }}
+              >
+                {cells.map((cell, i) => {
+                  if (cell.day === null) {
+                    return <div key={`empty-${i}`} className="aspect-square" />;
+                  }
+
+                  return (
+                    <button
+                      key={cell.iso}
+                      type="button"
+                      disabled={cell.disabled}
+                      onClick={() => cell.iso && onChange(cell.iso)}
+                      className={`aspect-square rounded-xl font-label text-sm font-semibold transition ${
+                        cell.isSelected
+                          ? "bg-burgundy text-white shadow-[0_2px_0_var(--burgundy-press)]"
+                          : cell.isToday
+                            ? "border border-burgundy/40 bg-cream-blush text-burgundy"
+                            : cell.disabled
+                              ? "cursor-not-allowed text-ink-muted/30"
+                              : "text-ink hover:bg-cream-peach/70"
+                      }`}
+                    >
+                      {cell.day}
+                    </button>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const iso = toIso(
+                    today.getFullYear(),
+                    today.getMonth(),
+                    today.getDate(),
+                  );
+                  if (today >= min) {
+                    onChange(iso);
+                    setView(
+                      new Date(today.getFullYear(), today.getMonth(), 1),
+                    );
+                  }
+                }}
+                className="font-label text-[10px] font-bold uppercase tracking-wide text-burgundy hover:underline"
+              >
+                Aujourd&apos;hui
+              </button>
+              {value ? (
+                <button
+                  type="button"
+                  onClick={() => onChange("")}
+                  className="font-label text-[10px] font-bold uppercase tracking-wide text-ink-muted hover:underline"
+                >
+                  Effacer
+                </button>
+              ) : (
+                <span className="font-label text-[10px] uppercase tracking-wide text-ink-muted/50">
+                  Sélection requise
+                </span>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Hidden required field for form validity */}

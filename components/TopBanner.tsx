@@ -30,12 +30,12 @@ export function TopBanner({
   return (
     <aside className="bg-burgundy flex flex-wrap items-center justify-center gap-3 px-4 py-2 text-center">
       <span className="size-2 shrink-0 rounded-full bg-amber" />
-      <p className="font-label text-sm font-medium tracking-[0.8px] text-white sm:text-base">
+      <p className="font-label text-[11px] font-medium tracking-[0.8px] text-white sm:text-base">
         {left ??
-          "MAISON POISSONNIÈRE & MAISON MONTMARTRE : SERVICE EN CONTINU DE 12H À 22H30"}
+          "DEUX MAISONS À PARIS · MONTMARTRE (2E) & POISSONNIÈRE (10E)"}
       </p>
-      <p className="font-label text-sm font-medium tracking-[0.8px] text-[#ffb3ad] sm:text-base">
-        {right ?? "🥟 Momo faits main chaque matin à Paris"}
+      <p className="font-label text-[11px] font-medium tracking-[0.8px] text-[#ffb3ad] sm:text-base">
+        {right ?? "Momos faits main chaque matin"}
       </p>
     </aside>
   );
