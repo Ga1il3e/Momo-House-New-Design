@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FadeIn } from "@/components/motion/FadeIn";
+import { HoverLift } from "@/components/motion/HoverLift";
+import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { Icon } from "@/components/Icon";
 import { houseList } from "@/lib/houses";
 
@@ -30,16 +32,17 @@ export default function ContactPage() {
         </a>
       </FadeIn>
 
-      <div className="mt-12 grid gap-6 md:grid-cols-2">
-        {houseList.map((house, index) => (
-          <FadeIn key={house.id} delay={0.08 * (index + 1)}>
-            <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-[rgba(228,190,186,0.45)] bg-white shadow-sm">
-              <div className="relative h-44">
+      <Stagger className="mt-12 grid gap-6 md:grid-cols-2">
+        {houseList.map((house) => (
+          <StaggerItem key={house.id} className="h-full">
+            <HoverLift className="h-full">
+            <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-[rgba(228,190,186,0.45)] bg-white shadow-sm">
+              <div className="relative h-44 overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={house.facadeImage}
                   alt={house.name}
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-bistro/85 via-bistro/25 to-transparent" />
                 <div className="absolute bottom-4 left-5 right-5 text-paper">
@@ -104,9 +107,10 @@ export default function ContactPage() {
                 </div>
               </div>
             </article>
-          </FadeIn>
+            </HoverLift>
+          </StaggerItem>
         ))}
-      </div>
+      </Stagger>
 
       <FadeIn delay={0.2} className="mt-12 text-center">
         <p className="text-sm text-ink-muted">

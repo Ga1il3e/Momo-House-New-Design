@@ -2,10 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { LayoutGroup, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { DishStage, FloatingPlate } from "@/components/motion/DishStage";
+import { HoverLift } from "@/components/motion/HoverLift";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
+import { usePrefersReducedMotion } from "@/components/motion/usePrefersReducedMotion";
 import { ReservationCta } from "@/components/ReservationCta";
 import { houses, type HouseId } from "@/lib/houses";
 import { cartes } from "@/lib/menu";
@@ -25,6 +28,7 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
   const carte = cartes[houseId];
   const other = houses[houseId === "montmartre" ? "poissonniere" : "montmartre"];
   const [active, setActive] = useState<SectionId>("signatures");
+  const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
@@ -108,22 +112,38 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
 
       {/* Sticky category rail */}
       <div className="sticky top-[57px] z-30 border-b border-[rgba(228,190,186,0.35)] bg-paper/95 backdrop-blur-md sm:top-[68px]">
-        <div className="mx-auto flex max-w-[1280px] gap-2 overflow-x-auto px-4 py-3 sm:px-12">
-          {sections.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => scrollToSection(s.id)}
-              className={`min-h-11 shrink-0 rounded-full px-4 py-2.5 font-label text-xs font-bold uppercase tracking-wide transition ${
-                active === s.id
-                  ? "bg-burgundy text-white shadow-[0_2px_0_var(--burgundy-press)]"
-                  : "bg-paper-soft text-ink-muted hover:bg-paper-muted"
-              }`}
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
+        <LayoutGroup>
+          <div className="mx-auto flex max-w-[1280px] gap-2 overflow-x-auto px-4 py-3 sm:px-12">
+            {sections.map((s) => {
+              const isActive = active === s.id;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => scrollToSection(s.id)}
+                  className={`relative min-h-11 shrink-0 rounded-full px-4 py-2.5 font-label text-xs font-bold uppercase tracking-wide transition ${
+                    isActive
+                      ? "text-white"
+                      : "bg-paper-soft text-ink-muted hover:bg-paper-muted"
+                  }`}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="carte-filter"
+                      className="absolute inset-0 rounded-full bg-burgundy shadow-[0_2px_0_var(--burgundy-press)]"
+                      transition={
+                        reduced
+                          ? { duration: 0.01 }
+                          : { type: "spring", stiffness: 420, damping: 32 }
+                      }
+                    />
+                  )}
+                  <span className="relative z-10">{s.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </LayoutGroup>
       </div>
 
       <div className="mx-auto max-w-[1280px] space-y-16 px-4 py-12 sm:px-12 sm:py-16">
@@ -143,7 +163,8 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
 
           <Stagger className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
             {carte.signatures.map((item) => (
-              <StaggerItem key={item.id}>
+              <StaggerItem key={item.id} className="h-full">
+                <HoverLift className="h-full">
                 <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-[rgba(228,190,186,0.4)] bg-white shadow-sm">
                   <DishStage size="lg" className="rounded-none rounded-t-3xl">
                     <Image
@@ -176,6 +197,7 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
                     </p>
                   </div>
                 </article>
+                </HoverLift>
               </StaggerItem>
             ))}
           </Stagger>
@@ -191,10 +213,11 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
             <h2 className="font-display mt-1 text-2xl font-semibold">
               Mode de Cuisson
             </h2>
-            <ul className="mt-5 space-y-4">
+            <Stagger className="mt-5 space-y-4" stagger={0.05}>
               {carte.cooking.map((c) => (
-                <li
-                  key={c.id}
+                <StaggerItem key={c.id}>
+                  <HoverLift>
+                <div
                   className="rounded-2xl border border-[rgba(228,190,186,0.35)] bg-paper-soft p-4"
                 >
                   <div className="flex items-baseline justify-between gap-2">
@@ -204,9 +227,11 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
                     </p>
                   </div>
                   <p className="mt-1 text-sm text-ink-muted">{c.description}</p>
-                </li>
+                </div>
+                  </HoverLift>
+                </StaggerItem>
               ))}
-            </ul>
+            </Stagger>
             </FadeIn>
           </div>
 
@@ -218,10 +243,11 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
             <h2 className="font-display mt-1 text-2xl font-semibold">
               Sauces & Dips Achar
             </h2>
-            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+            <Stagger className="mt-5 grid gap-3 sm:grid-cols-2" stagger={0.05}>
               {carte.sauces.map((s) => (
-                <li
-                  key={s.id}
+                <StaggerItem key={s.id}>
+                  <HoverLift>
+                <div
                   className="rounded-2xl border border-dashed border-paper-muted bg-paper-soft p-4"
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -233,9 +259,11 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
                   <p className="mt-1 text-xs leading-5 text-ink-muted">
                     {s.description}
                   </p>
-                </li>
+                </div>
+                  </HoverLift>
+                </StaggerItem>
               ))}
-            </ul>
+            </Stagger>
             </FadeIn>
           </div>
         </section>
@@ -252,8 +280,9 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
           </FadeIn>
           <Stagger className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {carte.hot.map((item) => (
-              <StaggerItem key={item.id}>
-                <article className="overflow-hidden rounded-3xl border border-[rgba(228,190,186,0.4)] bg-white shadow-sm">
+              <StaggerItem key={item.id} className="h-full">
+                <HoverLift className="h-full">
+                <article className="h-full overflow-hidden rounded-3xl border border-[rgba(228,190,186,0.4)] bg-white shadow-sm">
                   <DishStage>
                     <Image
                       src={item.image}
@@ -283,6 +312,7 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
                     ) : null}
                   </div>
                 </article>
+                </HoverLift>
               </StaggerItem>
             ))}
           </Stagger>
@@ -297,10 +327,11 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
             <h2 className="font-display mt-1 text-3xl font-bold">
               Boissons & Douceurs
             </h2>
-            <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+            <Stagger className="mt-8 grid gap-4 sm:grid-cols-2" stagger={0.05}>
               {carte.drinks.map((d) => (
-                <li
-                  key={d.id}
+                <StaggerItem key={d.id}>
+                  <HoverLift>
+                <div
                   className="flex items-start justify-between gap-3 rounded-2xl border border-[rgba(228,190,186,0.35)] bg-white p-5"
                 >
                   <div>
@@ -310,9 +341,11 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
                   <p className="font-display shrink-0 font-bold text-amber-deep">
                     {d.price}
                   </p>
-                </li>
+                </div>
+                  </HoverLift>
+                </StaggerItem>
               ))}
-            </ul>
+            </Stagger>
           </FadeIn>
         </section>
 
@@ -324,8 +357,8 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
             </h2>
             <div className="mt-8 grid gap-4 md:grid-cols-2">
               {[house, other].map((h) => (
+                <HoverLift key={h.id}>
                 <div
-                  key={h.id}
                   className="rounded-2xl border border-[rgba(228,190,186,0.4)] bg-paper-soft p-6"
                 >
                   <span className="rounded-full bg-burgundy px-2 py-1 font-label text-[10px] font-bold uppercase text-paper">
@@ -357,6 +390,7 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
                     </Link>
                   </div>
                 </div>
+                </HoverLift>
               ))}
             </div>
           </section>

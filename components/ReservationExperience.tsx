@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useEffect, useState, type FormEvent } from "react";
 import { DatePicker } from "@/components/DatePicker";
 import { Icon } from "@/components/Icon";
 import { FadeIn } from "@/components/motion/FadeIn";
+import { HoverLift } from "@/components/motion/HoverLift";
+import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import {
   easeOut,
   usePrefersReducedMotion,
@@ -142,19 +144,24 @@ export function ReservationExperience() {
                   <p className="text-sm text-paper/80">{house.address}</p>
                 </div>
               </div>
-              <div className="flex flex-col gap-3 p-5 sm:flex-row sm:flex-wrap">
+              <Stagger className="flex flex-col gap-3 p-5 sm:flex-row sm:flex-wrap">
+                <StaggerItem>
                 <a
                   href={house.phoneHref}
                   className="btn-burgundy inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm"
                 >
                   Appeler {house.phone}
                 </a>
+                </StaggerItem>
+                <StaggerItem>
                 <Link
                   href={house.enterHref}
                   className="inline-flex items-center justify-center rounded-full border border-burgundy px-5 py-2.5 font-label text-sm font-medium uppercase text-burgundy"
                 >
                   Voir la maison
                 </Link>
+                </StaggerItem>
+                <StaggerItem>
                 <button
                   type="button"
                   onClick={reset}
@@ -162,7 +169,8 @@ export function ReservationExperience() {
                 >
                   Nouvelle demande
                 </button>
-              </div>
+                </StaggerItem>
+              </Stagger>
             </div>
           </div>
         </motion.section>
@@ -187,17 +195,19 @@ export function ReservationExperience() {
               <div className="absolute inset-0 bg-gradient-to-r from-bistro via-bistro/85 to-burgundy-deep/80" />
             </div>
             <div className="relative mx-auto max-w-[1280px] px-4 py-16 sm:px-12 sm:py-20">
-              <p className="font-label text-sm font-bold uppercase tracking-[2px] text-amber-soft">
-                Réservation · Deux maisons parisiennes
-              </p>
-              <h1 className="font-display mt-3 max-w-2xl text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-                Choisissez votre table
-                <span className="text-amber-soft"> himalayenne</span>
-              </h1>
-              <p className="mt-4 max-w-xl text-base leading-7 text-paper/75 sm:text-lg">
-                Montmartre ou Poissonnière — même cuisine pliée minute, deux
-                atmosphères. Sélectionnez la maison, puis glissez votre créneau.
-              </p>
+              <FadeIn>
+                <p className="font-label text-sm font-bold uppercase tracking-[2px] text-amber-soft">
+                  Réservation · Deux maisons parisiennes
+                </p>
+                <h1 className="font-display mt-3 max-w-2xl text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                  Choisissez votre table
+                  <span className="text-amber-soft"> himalayenne</span>
+                </h1>
+                <p className="mt-4 max-w-xl text-base leading-7 text-paper/75 sm:text-lg">
+                  Montmartre ou Poissonnière — même cuisine pliée minute, deux
+                  atmosphères. Sélectionnez la maison, puis glissez votre créneau.
+                </p>
+              </FadeIn>
             </div>
           </section>
 
@@ -227,8 +237,8 @@ export function ReservationExperience() {
                     {houseList.map((h) => {
                       const selected = houseId === h.id;
                       return (
+                        <HoverLift key={h.id}>
                         <motion.button
-                          key={h.id}
                           type="button"
                           onClick={() => selectHouse(h.id)}
                           animate={
@@ -313,6 +323,7 @@ export function ReservationExperience() {
                             </AnimatePresence>
                           </div>
                         </motion.button>
+                        </HoverLift>
                       );
                     })}
                   </div>
@@ -349,22 +360,35 @@ export function ReservationExperience() {
                             <p className="font-label mb-2 text-xs font-medium uppercase tracking-[0.8px] text-ink-muted">
                               Créneau
                             </p>
+                            <LayoutGroup>
                             <div className="grid grid-cols-3 gap-2">
                               {TIMES.map((t) => (
                                 <button
                                   key={t}
                                   type="button"
                                   onClick={() => setTime(t)}
-                                  className={`min-h-11 rounded-xl px-3 py-3 font-label text-sm font-bold transition ${
+                                  className={`relative min-h-11 rounded-xl px-3 py-3 font-label text-sm font-bold transition ${
                                     time === t
-                                      ? "bg-burgundy text-white shadow-[0_2px_0_var(--burgundy-press)]"
+                                      ? "text-white"
                                       : "bg-paper-soft text-ink-muted hover:bg-paper-muted"
                                   }`}
                                 >
-                                  {t}
+                                  {time === t && (
+                                    <motion.span
+                                      layoutId="res-time"
+                                      className="absolute inset-0 rounded-xl bg-burgundy shadow-[0_2px_0_var(--burgundy-press)]"
+                                      transition={
+                                        reduced
+                                          ? { duration: 0.01 }
+                                          : { type: "spring", stiffness: 420, damping: 32 }
+                                      }
+                                    />
+                                  )}
+                                  <span className="relative z-10">{t}</span>
                                 </button>
                               ))}
                             </div>
+                            </LayoutGroup>
                             <p className="mt-2 text-xs leading-5 text-ink-muted">
                               Horaires {house.shortName} : {house.hours}
                             </p>
@@ -406,6 +430,7 @@ export function ReservationExperience() {
                             <p className="font-label mb-2 text-xs font-medium uppercase tracking-[0.8px] text-ink-muted">
                               Espace
                             </p>
+                            <LayoutGroup>
                             <div className="grid grid-cols-2 gap-2">
                               {(
                                 [
@@ -417,17 +442,28 @@ export function ReservationExperience() {
                                   key={value}
                                   type="button"
                                   onClick={() => setSpace(value)}
-                                  className={`min-h-11 rounded-2xl px-4 py-4 text-left transition ${
+                                  className={`relative min-h-11 rounded-2xl px-4 py-4 text-left transition ${
                                     space === value
-                                      ? "bg-burgundy text-white shadow-[0_3px_0_var(--burgundy-press)]"
+                                      ? "text-white"
                                       : "border border-[rgba(228,190,186,0.5)] bg-paper-soft text-ink hover:border-burgundy/40"
                                   }`}
                                 >
-                                  <span className="font-label text-sm font-bold uppercase tracking-wide">
+                                  {space === value && (
+                                    <motion.span
+                                      layoutId="res-space"
+                                      className="absolute inset-0 rounded-2xl bg-burgundy shadow-[0_3px_0_var(--burgundy-press)]"
+                                      transition={
+                                        reduced
+                                          ? { duration: 0.01 }
+                                          : { type: "spring", stiffness: 420, damping: 32 }
+                                      }
+                                    />
+                                  )}
+                                  <span className="relative z-10 font-label text-sm font-bold uppercase tracking-wide">
                                     {label}
                                   </span>
                                   <span
-                                    className={`mt-1 block text-xs ${
+                                    className={`relative z-10 mt-1 block text-xs ${
                                       space === value
                                         ? "text-white/70"
                                         : "text-ink-muted"
@@ -438,6 +474,7 @@ export function ReservationExperience() {
                                 </button>
                               ))}
                             </div>
+                            </LayoutGroup>
                           </div>
                         </div>
                       </div>
@@ -510,6 +547,7 @@ export function ReservationExperience() {
 
                 {/* Sticky summary */}
                 <aside className="lg:col-span-5">
+                  <FadeIn delay={0.1}>
                   <div className="sticky top-28 overflow-hidden rounded-3xl bg-burgundy text-white shadow-xl">
                     <div className="relative h-36">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -567,6 +605,7 @@ export function ReservationExperience() {
                       </p>
                     </div>
                   </div>
+                  </FadeIn>
                 </aside>
               </div>
 
