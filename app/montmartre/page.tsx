@@ -46,7 +46,8 @@ export default function MontmartrePage() {
     <>
       {/* Hero */}
       <section className="mx-auto grid max-w-[1280px] items-center gap-10 px-4 py-12 sm:px-12 lg:grid-cols-2">
-        <FadeIn>
+        <Stagger className="min-w-0" delay={0.05} stagger={0.12}>
+          <StaggerItem>
           <div className="mb-4 flex flex-wrap items-center gap-3">
             <span className="rounded-full bg-burgundy px-3 py-1 font-label text-xs font-bold uppercase tracking-wide text-paper">
               MAISON 01 • PARIS 2E
@@ -56,19 +57,25 @@ export default function MontmartrePage() {
               Ouvert · 11h45 – 15h00 & 18h30 – 22h30
             </span>
           </div>
+          </StaggerItem>
 
+          <StaggerItem>
           <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
             Momo House
             <br />
             <span className="text-burgundy">Montmartre</span>
           </h1>
+          </StaggerItem>
 
+          <StaggerItem>
           <p className="mt-4 max-w-xl text-base leading-7 text-ink-muted">
             L&apos;esprit d&apos;un bistrot du Sentier, la vapeur des sommets —
             salle chaleureuse boisée, drapeaux de prière et momos pliés minute
             au cœur du 2e.
           </p>
+          </StaggerItem>
 
+          <StaggerItem>
           <p className="mt-4 flex items-start gap-2 text-sm text-ink-muted">
             <Icon
               src="/icons/icon-pin.svg"
@@ -78,7 +85,9 @@ export default function MontmartrePage() {
             />
             {house.address} · Métro Sentier (L3) · Bourse (L3)
           </p>
+          </StaggerItem>
 
+          <StaggerItem>
           <div className="mt-5 rounded-2xl border border-[rgba(228,190,186,0.4)] bg-paper-soft p-4">
             <p className="font-label text-sm font-bold uppercase tracking-wide text-burgundy">
               SALLE BOISÉE & TERRASSE
@@ -90,7 +99,9 @@ export default function MontmartrePage() {
               7J / 7 · MIDI & SOIR
             </span>
           </div>
+          </StaggerItem>
 
+          <StaggerItem>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/reservation?maison=montmartre"
@@ -105,17 +116,18 @@ export default function MontmartrePage() {
               APPELER : {house.phone}
             </a>
           </div>
-        </FadeIn>
+          </StaggerItem>
+        </Stagger>
 
-        <FadeIn delay={0.1}>
-          <div className="relative overflow-hidden rounded-3xl shadow-xl">
+        <FadeIn variant="clip" delay={0.18}>
+          <div className="group relative overflow-hidden rounded-3xl shadow-xl">
             <div className="relative aspect-[4/5] sm:aspect-[5/6]">
               <Image
                 src={house.heroImage}
                 alt="Façade Momo House Montmartre"
                 fill
                 sizes="(max-width: 1024px) 100vw, 45vw"
-                className="object-cover"
+                className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
                 priority
               />
             </div>

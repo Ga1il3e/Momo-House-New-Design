@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 type HoverLiftProps = {
   children: ReactNode;
   className?: string;
-  /** Kept for API compatibility; CSS uses a soft 4px lift. */
+  /** Kept for API compatibility; CSS uses an 8px lift. */
   lift?: number;
 };
 
@@ -13,7 +13,7 @@ type HoverLiftProps = {
 export function HoverLift({ children, className }: HoverLiftProps) {
   return (
     <div
-      className={`transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 ${className ?? ""}`}
+      className={`transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-2 hover:shadow-[0_18px_36px_-12px_rgba(29,28,21,0.22)] ${className ?? ""}`}
     >
       {children}
     </div>

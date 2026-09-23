@@ -195,19 +195,25 @@ export function ReservationExperience() {
               <div className="absolute inset-0 bg-gradient-to-r from-bistro via-bistro/85 to-burgundy-deep/80" />
             </div>
             <div className="relative mx-auto max-w-[1280px] px-4 py-16 sm:px-12 sm:py-20">
-              <FadeIn>
+              <Stagger delay={0.05} stagger={0.13}>
+                <StaggerItem>
                 <p className="font-label text-sm font-bold uppercase tracking-[2px] text-amber-soft">
                   Réservation · Deux maisons parisiennes
                 </p>
+                </StaggerItem>
+                <StaggerItem>
                 <h1 className="font-display mt-3 max-w-2xl text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
                   Choisissez votre table
                   <span className="text-amber-soft"> himalayenne</span>
                 </h1>
+                </StaggerItem>
+                <StaggerItem>
                 <p className="mt-4 max-w-xl text-base leading-7 text-paper/75 sm:text-lg">
                   Montmartre ou Poissonnière — même cuisine pliée minute, deux
                   atmosphères. Sélectionnez la maison, puis glissez votre créneau.
                 </p>
-              </FadeIn>
+                </StaggerItem>
+              </Stagger>
             </div>
           </section>
 
@@ -233,11 +239,12 @@ export function ReservationExperience() {
                     </p>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <Stagger className="grid gap-4 md:grid-cols-2" stagger={0.16}>
                     {houseList.map((h) => {
                       const selected = houseId === h.id;
                       return (
-                        <HoverLift key={h.id}>
+                        <StaggerItem key={h.id}>
+                        <HoverLift>
                         <motion.button
                           type="button"
                           onClick={() => selectHouse(h.id)}
@@ -324,9 +331,10 @@ export function ReservationExperience() {
                           </div>
                         </motion.button>
                         </HoverLift>
+                        </StaggerItem>
                       );
                     })}
-                  </div>
+                  </Stagger>
                 </div>
               </FadeIn>
 

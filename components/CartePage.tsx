@@ -71,20 +71,27 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
           <div className="absolute inset-0 bg-gradient-to-r from-bistro via-bistro/85 to-burgundy-deep/70" />
         </div>
         <div className="relative mx-auto grid max-w-[1280px] items-center gap-8 px-4 py-14 sm:px-12 lg:grid-cols-12 lg:py-20">
-          <FadeIn className="lg:col-span-7">
+          <Stagger className="lg:col-span-7" delay={0.05} stagger={0.12}>
+            <StaggerItem>
             <p className="font-label text-xs font-bold uppercase tracking-[2px] text-amber-soft">
               Maison {house.shortName} · {carte.heroNote}
             </p>
+            </StaggerItem>
+            <StaggerItem>
             <h1 className="font-display mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
               La Carte des Saveurs
               <br />
               <span className="text-amber-soft">Himalayennes</span>
             </h1>
+            </StaggerItem>
+            <StaggerItem>
             <p className="mt-4 max-w-xl text-base leading-7 text-paper/75">
               Momos pliés minute selon les 24 plis traditionnels, sauces achar
               maison et streetfood des plateaux — servis dans l&apos;esprit
               d&apos;un bistrot parisien.
             </p>
+            </StaggerItem>
+            <StaggerItem>
             <div className="mt-6 flex flex-wrap gap-3">
               <a href="#signatures" className="btn-burgundy px-6 py-3 text-sm">
                 Voir les momos
@@ -96,8 +103,9 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
                 Réserver
               </Link>
             </div>
-          </FadeIn>
-          <FadeIn delay={0.12} className="lg:col-span-5">
+            </StaggerItem>
+          </Stagger>
+          <FadeIn variant="clip" delay={0.2} className="lg:col-span-5">
             <div className="relative mx-auto flex h-64 max-w-sm items-center justify-center sm:h-80">
               <FloatingPlate
                 src={heroPlate}

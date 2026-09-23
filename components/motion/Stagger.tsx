@@ -1,13 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { easeOut, fadeUp, usePrefersReducedMotion } from "./usePrefersReducedMotion";
 
 const StaggerActiveContext = createContext(false);
@@ -22,19 +16,12 @@ type StaggerProps = {
 export function Stagger({
   children,
   className,
-  delay = 0,
-  stagger = 0.08,
+  delay = 0.08,
+  stagger = 0.14,
 }: StaggerProps) {
   const reduced = usePrefersReducedMotion();
-  const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    setReady(true);
-  }, []);
-
-  const active = ready && !reduced;
-
-  if (!active) {
+  if (reduced) {
     return (
       <StaggerActiveContext.Provider value={false}>
         <div className={className}>{children}</div>
@@ -48,7 +35,7 @@ export function Stagger({
         className={className}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "0px 0px -6% 0px" }}
+        viewport={{ once: true, margin: "0px 0px -10% 0px", amount: 0.12 }}
         variants={{
           hidden: {},
           visible: {
@@ -81,7 +68,7 @@ export function StaggerItem({ children, className }: StaggerItemProps) {
     <motion.div
       className={className}
       variants={fadeUp}
-      transition={{ duration: 0.45, ease: easeOut }}
+      transition={{ duration: 0.7, ease: easeOut }}
     >
       {children}
     </motion.div>

@@ -13,24 +13,32 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-16 sm:px-12 sm:py-20">
-      <FadeIn>
+      <Stagger delay={0.05} stagger={0.13}>
+        <StaggerItem>
         <p className="font-label text-sm font-bold uppercase tracking-[2px] text-burgundy">
           Contact & Presse
         </p>
+        </StaggerItem>
+        <StaggerItem>
         <h1 className="font-display mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">
           Deux maisons, une équipe
         </h1>
+        </StaggerItem>
+        <StaggerItem>
         <p className="mt-4 max-w-2xl text-base leading-7 text-ink-muted">
           Pour les demandes presse, partenariats ou privatisation, écrivez-nous
           ou appelez directement la maison de votre choix.
         </p>
+        </StaggerItem>
+        <StaggerItem>
         <a
           href="mailto:contact@momohouse.fr"
           className="btn-burgundy mt-6 inline-flex items-center gap-2 px-6 py-3 text-sm"
         >
           contact@momohouse.fr
         </a>
-      </FadeIn>
+        </StaggerItem>
+      </Stagger>
 
       <Stagger className="mt-12 grid gap-6 md:grid-cols-2">
         {houseList.map((house) => (
