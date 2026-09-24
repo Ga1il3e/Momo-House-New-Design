@@ -49,6 +49,10 @@ function resolveChrome(pathname: string): {
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  if (pathname.startsWith("/admin")) {
+    return <main className="flex flex-1 flex-col">{children}</main>;
+  }
+
   const { variant, activeHouse, bannerLeft, bannerRight } =
     resolveChrome(pathname);
 
