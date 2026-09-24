@@ -45,7 +45,7 @@ export default function PoissonnierePage() {
   return (
     <>
       {/* Hero */}
-      <section className="mx-auto grid max-w-[1280px] items-center gap-10 px-4 py-12 sm:px-12 lg:grid-cols-2">
+      <section className="mx-auto grid max-w-[1280px] items-start gap-10 px-4 py-12 sm:px-12 lg:grid-cols-2">
         <Stagger className="min-w-0" delay={0.05} stagger={0.12}>
           <StaggerItem>
           <div className="mb-4 flex flex-wrap items-center gap-3">

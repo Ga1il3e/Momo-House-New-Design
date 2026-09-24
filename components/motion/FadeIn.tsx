@@ -72,7 +72,7 @@ export function FadeIn({
       className={className}
       initial={hiddenState(variant, y)}
       whileInView={visibleState(variant)}
-      viewport={{ once, margin: "0px 0px -12% 0px", amount: 0.15 }}
+      viewport={{ once, margin: "0px 0px -8% 0px" }}
       transition={{ duration: 0.85, delay, ease: easeOut }}
       {...rest}
     >

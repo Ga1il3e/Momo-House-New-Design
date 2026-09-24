@@ -239,12 +239,16 @@ export function ReservationExperience() {
                     </p>
                   </div>
 
-                  <Stagger className="grid gap-4 md:grid-cols-2" stagger={0.16}>
+                  <Stagger
+                    className="grid gap-4 md:grid-cols-2"
+                    stagger={0.16}
+                    whenInView={false}
+                  >
                     {houseList.map((h) => {
                       const selected = houseId === h.id;
                       return (
-                        <StaggerItem key={h.id}>
-                        <HoverLift>
+                        <StaggerItem key={h.id} className="w-full">
+                        <HoverLift className="w-full">
                         <motion.button
                           type="button"
                           onClick={() => selectHouse(h.id)}
@@ -258,17 +262,17 @@ export function ReservationExperience() {
                               ? { duration: 0.01 }
                               : { type: "spring", stiffness: 380, damping: 24 }
                           }
-                          className={`group relative overflow-hidden rounded-2xl text-left transition ${
+                          className={`group relative w-full overflow-hidden rounded-2xl text-left transition ${
                             selected
                               ? "ring-2 ring-burgundy ring-offset-2 ring-offset-paper"
                               : "ring-1 ring-[rgba(228,190,186,0.5)] hover:ring-burgundy/40"
                           }`}
                         >
-                          <div className="relative h-48 sm:h-56">
+                          <div className="relative h-48 overflow-hidden bg-bistro sm:h-56">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={h.facadeImage}
-                              alt=""
+                              alt={`Façade ${h.name}`}
                               className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-bistro via-bistro/40 to-transparent" />

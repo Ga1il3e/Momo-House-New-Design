@@ -11,6 +11,8 @@ type StaggerProps = {
   className?: string;
   delay?: number;
   stagger?: number;
+  /** Play when scrolled into view. Set false for above-the-fold UI. */
+  whenInView?: boolean;
 };
 
 export function Stagger({
@@ -18,6 +20,7 @@ export function Stagger({
   className,
   delay = 0.08,
   stagger = 0.14,
+  whenInView = true,
 }: StaggerProps) {
   const reduced = usePrefersReducedMotion();
 
@@ -29,22 +32,29 @@ export function Stagger({
     );
   }
 
+  const variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        delayChildren: delay,
+        staggerChildren: stagger,
+      },
+    },
+  };
+
   return (
     <StaggerActiveContext.Provider value>
       <motion.div
         className={className}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "0px 0px -10% 0px", amount: 0.12 }}
-        variants={{
-          hidden: {},
-          visible: {
-            transition: {
-              delayChildren: delay,
-              staggerChildren: stagger,
-            },
-          },
-        }}
+        animate={whenInView ? undefined : "visible"}
+        whileInView={whenInView ? "visible" : undefined}
+        viewport={
+          whenInView
+            ? { once: true, margin: "0px 0px -8% 0px" }
+            : undefined
+        }
+        variants={variants}
       >
         {children}
       </motion.div>
