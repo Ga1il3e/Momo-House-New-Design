@@ -49,10 +49,16 @@ Tracking file for the runbook. Update after every step.
 
 ## Phase E
 
-- [ ] E1 Browser script 1–24 — blocked on staff accounts + Stripe keys; public routes built
-- [x] E2 `grep SECRET .next/static` empty; typecheck/lint/build pass
-- [x] E3 Isolation test re-run after apply (exit 0, 0 leftover rows)
-- [ ] E4 PR — open after commit
+- [x] E1 Browser script (what can run without staff accounts)
+  - 1 pass — wrong password → `E-mail ou mot de passe incorrect.` (`/admin/login?erreur=auth`)
+  - 2–6, 8–11, 13–15, 17–24 blocked — no staff/owner accounts and no Stripe keys
+  - 7 partial — `/reservation?maison=montmartre` loads with honest copy (*La table est retenue… Pour confirmer la visite*)
+  - 12 partial — `/reservation/annuler` loads; confirm disabled without a token
+  - 16 partial — `/contact` has maison select
+  - Extra: `/admin` → login; `/admin/mot-de-passe` + `/admin/reinitialiser` render; `/montmartre/commander` shows online ordering unavailable without Stripe
+- [x] E2 `grep SECRET .next/static` — no project secrets (only React PropTypes + supabase-js `sb_secret_` prefix checks). Typecheck/lint/build already passed.
+- [x] E3 Isolation test re-run 2026-09-24 18:40 (`npx supabase@2.117.0 db query --linked`, exit 0; RAISE NOTICE lines not returned by Management API)
+- [x] E4 PR opened: https://github.com/Ga1il3e/Momo-House-New-Design/pull/2 (not merged)
 
 ---
 
@@ -63,6 +69,7 @@ Tracking file for the runbook. Update after every step.
 - 2026-09-24 B: first `db push` failed on settings NOT NULL vs reference seed; dropped NOT NULL (reference SQL not edited); push succeeded; second apply ok; isolation test ok; types generated; follow-up grants + `contact_messages.house NOT NULL`.
 - 2026-09-24 C: script ready. Commands printed in the step summary.
 - 2026-09-24 D: portal + public APIs + checkout + cron. `unstable_cache` used instead of `"use cache"` (cacheComponents not enabled).
+- 2026-09-24 E: PR #2 opened. Browser: login error, reset pages, reservation honest copy, contact maison, commander unavailable, guest cancel page. Isolation test re-run exit 0. Staff/Stripe steps remain human.
 - Ambiguity: isolation toward house from `requireHouseAccess`; staff client for staff reads.
 
 ## Remaining human work
