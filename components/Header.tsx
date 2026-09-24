@@ -102,6 +102,10 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
     isHouse && activeHouse
       ? `/reservation?maison=${activeHouse}`
       : "/reservation";
+  const staffHref =
+    isHouse && activeHouse
+      ? `/admin/login?maison=${activeHouse}`
+      : "/admin/login";
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- close the mobile menu on navigation
@@ -183,6 +187,20 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
           >
             RÉSERVER
           </Link>
+          <Link
+            href={staffHref}
+            aria-label="Espace équipe"
+            title="Espace équipe"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(228,190,186,0.5)] text-burgundy transition duration-200 hover:border-burgundy hover:bg-burgundy/[0.06]"
+          >
+            <Image
+              src="/icons/icon-user.svg"
+              alt=""
+              width={18}
+              height={18}
+              className="h-[18px] w-[18px]"
+            />
+          </Link>
           <button
             type="button"
             className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(228,190,186,0.5)] lg:hidden"
@@ -249,6 +267,20 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
                 onClick={() => setOpen(false)}
               >
                 RÉSERVER UNE TABLE
+              </Link>
+              <Link
+                href={staffHref}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[rgba(228,190,186,0.5)] font-label text-sm font-medium uppercase tracking-wide text-burgundy"
+                onClick={() => setOpen(false)}
+              >
+                <Image
+                  src="/icons/icon-user.svg"
+                  alt=""
+                  width={18}
+                  height={18}
+                  className="h-[18px] w-[18px]"
+                />
+                Espace équipe
               </Link>
             </div>
           </motion.div>
