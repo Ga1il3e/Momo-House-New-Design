@@ -23,14 +23,17 @@ export const getStaff = cache(async (): Promise<Staff | null> => {
   const { data, error } = await supabase.auth.getClaims();
   const claims = data?.claims as Claims | undefined;
   let email = claims?.email ?? null;
-  if (error || !claims?.sub) {
+  let userId = claims?.sub ?? null;
+  if (error || !userId) {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) return null;
     email = userData.user.email ?? null;
+    userId = userData.user.id;
   }
   const { data: member } = await supabase
     .from("staff_members")
     .select("user_id, role, house, display_name, active")
+    .eq("user_id", userId)
     .maybeSingle();
   if (!member?.active) return null;
   if (member.role !== "staff" && member.role !== "owner") return null;
