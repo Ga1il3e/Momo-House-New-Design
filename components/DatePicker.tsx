@@ -55,6 +55,8 @@ export function DatePicker({
 
   useEffect(() => {
     const now = new Date();
+    // Client calendar "today" is only known after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- seed once from the browser clock
     setTodayIso(toIso(now.getFullYear(), now.getMonth(), now.getDate()));
   }, []);
 
@@ -75,6 +77,7 @@ export function DatePicker({
     if (!todayIso) return;
     const seed = selected ?? parseIso(todayIso);
     if (!seed) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- seed once from the browser clock
     setView(new Date(seed.getFullYear(), seed.getMonth(), 1));
     // Seed once when the client date is known.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot seed on todayIso

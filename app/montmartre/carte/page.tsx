@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CartePage } from "@/components/CartePage";
+import { getMenu } from "@/lib/get-menu";
 
 export const metadata: Metadata = {
   title: "La Carte — Montmartre",
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
     "La carte des saveurs himalayennes à Momo House Montmartre : momos, thukpa, achar et streetfood.",
 };
 
-export default function MontmartreCartePage() {
-  return <CartePage houseId="montmartre" />;
+export default async function MontmartreCartePage() {
+  const menu = await getMenu("montmartre");
+  return <CartePage houseId="montmartre" menu={menu} />;
 }

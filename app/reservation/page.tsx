@@ -5,7 +5,7 @@ import { ReservationExperience } from "@/components/ReservationExperience";
 export const metadata: Metadata = {
   title: "Réserver une table",
   description:
-    "Réservez chez Momo House Montmartre ou Poissonnière — choisissez la maison, le créneau et le nombre de convives.",
+    "Réservez une table numérotée chez Momo House Montmartre ou Poissonnière. Une table retenue se libère à la fin du créneau.",
 };
 
 export default function ReservationPage() {

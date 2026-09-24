@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { TopBanner } from "@/components/TopBanner";
+import { EventBannersPopup } from "@/components/site/EventBannersPopup";
 import type { HouseId } from "@/lib/houses";
 
 function resolveChrome(pathname: string): {
@@ -47,23 +48,37 @@ function resolveChrome(pathname: string): {
   return { variant: "home" };
 }
 
-export function SiteShell({ children }: { children: React.ReactNode }) {
+export function SiteShell({
+  children,
+  homeBannerLeft,
+  homeBannerRight,
+}: {
+  children: React.ReactNode;
+  homeBannerLeft?: string | null;
+  homeBannerRight?: string | null;
+}) {
   const pathname = usePathname();
+  if (pathname.startsWith("/admin")) {
+    return <main className="flex flex-1 flex-col">{children}</main>;
+  }
+
   const { variant, activeHouse, bannerLeft, bannerRight } =
     resolveChrome(pathname);
+  const isHome = variant === "home";
 
   return (
     <>
       <TopBanner
-        variant={variant === "home" ? "home" : "house"}
-        left={bannerLeft}
-        right={bannerRight}
+        variant={isHome ? "home" : "house"}
+        left={isHome ? homeBannerLeft || undefined : bannerLeft}
+        right={isHome ? homeBannerRight || undefined : bannerRight}
       />
       <Header variant={variant} activeHouse={activeHouse} />
       <main className="flex flex-1 flex-col">
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />
+      <EventBannersPopup />
     </>
   );
 }

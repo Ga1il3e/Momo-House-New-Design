@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { HoverLift } from "@/components/motion/HoverLift";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { Icon } from "@/components/Icon";
+import { ContactForm } from "@/components/site/ContactForm";
 import { houseList } from "@/lib/houses";
 
 export const metadata: Metadata = {
@@ -119,6 +121,10 @@ export default function ContactPage() {
           </StaggerItem>
         ))}
       </Stagger>
+
+      <Suspense>
+        <ContactForm />
+      </Suspense>
 
       <FadeIn delay={0.2} className="mt-12 text-center">
         <p className="text-sm text-ink-muted">

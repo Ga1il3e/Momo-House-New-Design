@@ -1,0 +1,7 @@
+-- Apply in the SQL editor of project qhwmjyzzeggyoktdmqtt, in this order.
+-- Each file is a separate run so new enum values can be committed first.
+--
+-- 1. migrations/20260924081330_table_holds.sql
+-- 2. migrations/20260924105900_reservation_statuses.sql
+-- 3. migrations/20260924105912_website_admin_foundation.sql
+-- 4. Create the staff Auth user, then bootstrap_staff.sql

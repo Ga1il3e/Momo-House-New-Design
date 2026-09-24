@@ -8,9 +8,10 @@ import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { Icon } from "@/components/Icon";
 import { ReservationCta } from "@/components/ReservationCta";
 import { houses } from "@/lib/houses";
-import { homepageDishes } from "@/lib/menu";
+import { getFeaturedDishes } from "@/lib/site-home";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const featured = await getFeaturedDishes();
   return (
     <>
       <DualPortalHero />
@@ -122,7 +123,7 @@ export default function HomePage() {
             </p>
           </FadeIn>
           <Stagger className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {homepageDishes.map((dish) => (
+            {featured.map((dish) => (
               <StaggerItem key={dish.id}>
                 <DishCard dish={dish} />
               </StaggerItem>
