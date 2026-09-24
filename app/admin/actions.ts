@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createStaffClient } from "@/lib/supabase/server";
 
@@ -15,19 +16,20 @@ export async function signIn(formData: FormData) {
   const supabase = await createStaffClient();
   if (!supabase) redirect("/admin/login?erreur=config");
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) {
-    if (error.status === 429) redirect("/admin/login?erreur=limite");
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error || !data.user) {
+    if (error?.status === 429) redirect("/admin/login?erreur=limite");
     redirect("/admin/login?erreur=auth");
   }
 
-  const { data } = await supabase.auth.getClaims();
-  const role = (data?.claims as { app_metadata?: { role?: string } } | undefined)
-    ?.app_metadata?.role;
+  const role = data.user.app_metadata?.role;
   if (role !== "staff" && role !== "owner") {
     await supabase.auth.signOut();
     redirect("/admin/login?erreur=acces");
   }
+
+  await supabase.auth.getSession();
+  revalidatePath("/", "layout");
   redirect(next);
 }
 

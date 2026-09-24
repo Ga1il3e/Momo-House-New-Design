@@ -13,6 +13,8 @@ const OWNER_ONLY = new Set(["/admin/maisons", "/admin/equipe", "/admin/marque"])
 
 type Claims = {
   app_metadata?: { role?: string; house?: string };
+  email?: string;
+  sub?: string;
 };
 
 function copyCookies(from: NextResponse, to: NextResponse) {
@@ -56,8 +58,19 @@ export async function updateSession(request: NextRequest) {
   );
 
   const { data } = await supabase.auth.getClaims();
-  const claims = data?.claims as Claims | undefined;
-  return guardAdmin(request, supabaseResponse, claims ?? null);
+  let claims = (data?.claims as Claims | undefined) ?? null;
+  const isAdmin = request.nextUrl.pathname === "/admin" || request.nextUrl.pathname.startsWith("/admin/");
+  if (!claims && isAdmin) {
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData.user) {
+      claims = {
+        app_metadata: userData.user.app_metadata as Claims["app_metadata"],
+        email: userData.user.email,
+        sub: userData.user.id,
+      };
+    }
+  }
+  return guardAdmin(request, supabaseResponse, claims);
 }
 
 function redirectTo(request: NextRequest, supabaseResponse: NextResponse, pathname: string) {

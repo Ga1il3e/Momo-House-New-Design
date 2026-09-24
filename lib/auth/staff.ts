@@ -21,8 +21,13 @@ export const getStaff = cache(async (): Promise<Staff | null> => {
   const supabase = await createStaffClient();
   if (!supabase) return null;
   const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) return null;
-  const claims = data.claims as Claims;
+  const claims = data?.claims as Claims | undefined;
+  let email = claims?.email ?? null;
+  if (error || !claims?.sub) {
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) return null;
+    email = userData.user.email ?? null;
+  }
   const { data: member } = await supabase
     .from("staff_members")
     .select("user_id, role, house, display_name, active")
@@ -31,7 +36,7 @@ export const getStaff = cache(async (): Promise<Staff | null> => {
   if (member.role !== "staff" && member.role !== "owner") return null;
   return {
     userId: member.user_id,
-    email: claims.email ?? null,
+    email,
     role: member.role,
     house: member.house && isHouse(member.house) ? member.house : null,
     displayName: member.display_name,
