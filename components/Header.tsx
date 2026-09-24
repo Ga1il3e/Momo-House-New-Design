@@ -104,6 +104,7 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
       : "/reservation";
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- close the mobile menu on navigation
     setOpen(false);
   }, [pathname]);
 

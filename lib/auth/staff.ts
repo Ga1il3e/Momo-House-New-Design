@@ -1,0 +1,63 @@
+import { cache } from "react";
+import { notFound, redirect } from "next/navigation";
+import { isHouse, type House } from "@/lib/house";
+import { createStaffClient } from "@/lib/supabase/server";
+
+export type Staff = {
+  userId: string;
+  email: string | null;
+  role: "staff" | "owner";
+  house: House | null;
+  displayName: string | null;
+};
+
+type Claims = {
+  app_metadata?: { role?: string; house?: string };
+  email?: string;
+  sub?: string;
+};
+
+export const getStaff = cache(async (): Promise<Staff | null> => {
+  const supabase = await createStaffClient();
+  if (!supabase) return null;
+  const { data, error } = await supabase.auth.getClaims();
+  if (error || !data?.claims) return null;
+  const claims = data.claims as Claims;
+  const { data: member } = await supabase
+    .from("staff_members")
+    .select("user_id, role, house, display_name, active")
+    .maybeSingle();
+  if (!member?.active) return null;
+  if (member.role !== "staff" && member.role !== "owner") return null;
+  return {
+    userId: member.user_id,
+    email: claims.email ?? null,
+    role: member.role,
+    house: member.house && isHouse(member.house) ? member.house : null,
+    displayName: member.display_name,
+  };
+});
+
+export async function requireStaff() {
+  const staff = await getStaff();
+  if (!staff) redirect("/admin/login");
+  return staff;
+}
+
+export async function requireHouseAccess(house: string) {
+  if (!isHouse(house)) notFound();
+  const staff = await getStaff();
+  if (!staff) redirect(`/admin/login?next=/admin/${house}`);
+  if (staff.role === "staff" && staff.house !== house) {
+    redirect(`/admin/${staff.house}`);
+  }
+  return { staff, house };
+}
+
+export async function requireOwner() {
+  const staff = await requireStaff();
+  if (staff.role !== "owner") {
+    redirect(staff.house ? `/admin/${staff.house}` : "/admin");
+  }
+  return staff;
+}

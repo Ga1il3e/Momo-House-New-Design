@@ -11,7 +11,8 @@ import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { usePrefersReducedMotion } from "@/components/motion/usePrefersReducedMotion";
 import { ReservationCta } from "@/components/ReservationCta";
 import { houses, type HouseId } from "@/lib/houses";
-import { cartes } from "@/lib/menu";
+import { cartes, type PublicMenu } from "@/lib/menu";
+import { euro } from "@/lib/money";
 
 const sections = [
   { id: "signatures", label: "Momos" },
@@ -23,9 +24,10 @@ const sections = [
 
 type SectionId = (typeof sections)[number]["id"];
 
-export function CartePage({ houseId }: { houseId: HouseId }) {
+export function CartePage({ houseId, menu }: { houseId: HouseId; menu?: PublicMenu | null }) {
   const house = houses[houseId];
   const carte = cartes[houseId];
+  const dbCategories = menu?.categories.filter((category) => category.dishes.length > 0) ?? [];
   const other = houses[houseId === "montmartre" ? "poissonniere" : "montmartre"];
   const [active, setActive] = useState<SectionId>("signatures");
   const reduced = usePrefersReducedMotion();
@@ -117,6 +119,36 @@ export function CartePage({ houseId }: { houseId: HouseId }) {
           </FadeIn>
         </div>
       </section>
+
+      {dbCategories.length > 0 ? (
+        <section className="mx-auto max-w-[1280px] space-y-10 px-4 py-12 sm:px-12">
+          {dbCategories.map((category) => (
+            <div key={category.id}>
+              <h2 className="font-display text-3xl font-extrabold">{category.name}</h2>
+              {category.nameAlt ? <p className="text-sm text-ink-muted">{category.nameAlt}</p> : null}
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                {category.dishes.map((dish) => (
+                  <article key={dish.id} className="rounded-3xl bg-white p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-display text-xl font-bold">{dish.name}</h3>
+                        {dish.description ? <p className="mt-1 text-sm text-ink-muted">{dish.description}</p> : null}
+                        {dish.allergens.length ? (
+                          <p className="mt-2 text-xs text-ink-muted">Allergènes : {dish.allergens.join(", ")}</p>
+                        ) : (
+                          <p className="mt-2 text-xs text-ink-muted">Aucun allergène déclaré</p>
+                        )}
+                      </div>
+                      <p className="font-medium text-burgundy">{euro(dish.priceCents)}</p>
+                    </div>
+                    {!dish.available ? <p className="mt-2 text-xs font-bold uppercase text-burgundy">Épuisé</p> : null}
+                  </article>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+      ) : null}
 
       {/* Sticky category rail */}
       <div className="sticky top-[57px] z-30 border-b border-[rgba(228,190,186,0.35)] bg-paper/95 backdrop-blur-md sm:top-[68px]">

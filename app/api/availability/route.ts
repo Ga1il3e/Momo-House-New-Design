@@ -1,29 +1,25 @@
 import { NextRequest } from "next/server";
-import { supabaseConfigured } from "@/lib/supabase/env";
-import { availability, isHouseId, isZone } from "@/lib/reservation-store";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { isHouse } from "@/lib/house";
+import { frenchError, httpStatusForError } from "@/lib/errors";
 
 export async function GET(request: NextRequest) {
-  if (!supabaseConfigured()) {
-    return Response.json({ configured: false, tables: [], holdMinutes: 90 });
-  }
-
   const params = request.nextUrl.searchParams;
-  const house = params.get("house");
-  const zone = params.get("zone");
+  const house = params.get("maison") ?? params.get("house");
   const date = params.get("date") ?? "";
-  const time = params.get("time") ?? "";
-  const guests = Number(params.get("guests") ?? "1");
-
-  if (!isHouseId(house) || !isZone(zone) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return Response.json({ error: "invalid_query" }, { status: 400 });
+  const guests = Number(params.get("couverts") ?? params.get("guests") ?? "2");
+  if (!isHouse(house) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return Response.json({ error: "Requête invalide." }, { status: 400 });
   }
-  if (!/^\d{2}:\d{2}$/.test(time) || !Number.isFinite(guests) || guests < 1) {
-    return Response.json({ error: "invalid_query" }, { status: 400 });
+  const admin = createAdminClient();
+  if (!admin) return Response.json({ error: "unconfigured" }, { status: 503 });
+  const { data, error } = await admin.rpc("get_availability", {
+    p_house: house,
+    p_date: date,
+    p_guests: Number.isFinite(guests) ? guests : 2,
+  });
+  if (error) {
+    return Response.json({ error: frenchError(error) }, { status: httpStatusForError(error) });
   }
-
-  const result = await availability({ house, zone, date, time, guests });
-  if (!result) {
-    return Response.json({ configured: false, tables: [], holdMinutes: 90 });
-  }
-  return Response.json(result);
+  return Response.json(data ?? {}, { headers: { "Cache-Control": "no-store" } });
 }

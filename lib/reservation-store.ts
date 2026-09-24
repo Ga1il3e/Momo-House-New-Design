@@ -54,7 +54,7 @@ export async function listActiveHolds(input: {
     .from("reservations")
     .select("*")
     .eq("service_date", input.date)
-    .in("status", ["held", "blocked"])
+    .in("status", ["held", "blocked", "confirmed"])
     .in("table_id", ids);
   if (error) throw error;
   return data as ReservationRow[];
@@ -110,7 +110,7 @@ export async function placeHold(input: {
 }) {
   const supabase = client();
   if (!supabase) return null;
-  const { data, error } = await supabase.schema("private").rpc("place_hold", {
+  const { data, error } = await supabase.rpc("place_hold", {
     p_house: input.house,
     p_table_id: input.tableId,
     p_date: input.date,

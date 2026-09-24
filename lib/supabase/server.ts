@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import type { Database } from "@/lib/supabase/database.types";
 
 export async function createStaffClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -8,7 +8,7 @@ export async function createStaffClient() {
   if (!url || !key) return null;
 
   const cookieStore = await cookies();
-  return createServerClient(url, key, {
+  return createServerClient<Database>(url, key, {
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -26,11 +26,5 @@ export async function createStaffClient() {
   });
 }
 
-export function createServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SECRET_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-}
+/** @deprecated Use createAdminClient from lib/supabase/admin.ts */
+export { createAdminClient as createServiceClient } from "@/lib/supabase/admin";

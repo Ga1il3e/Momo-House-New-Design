@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { TopBanner } from "@/components/TopBanner";
+import { EventBannersPopup } from "@/components/site/EventBannersPopup";
 import type { HouseId } from "@/lib/houses";
 
 function resolveChrome(pathname: string): {
@@ -68,6 +69,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />
+      <EventBannersPopup />
     </>
   );
 }

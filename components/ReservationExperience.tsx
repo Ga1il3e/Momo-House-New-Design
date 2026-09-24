@@ -15,7 +15,7 @@ import {
 } from "@/components/motion/usePrefersReducedMotion";
 import { houses, houseList, type HouseId } from "@/lib/houses";
 
-const TIMES = ["12:00", "12:30", "13:00", "13:30", "19:00", "19:30", "20:00", "20:30", "21:00"];
+const FALLBACK_TIMES = ["12:00", "12:30", "13:00", "13:30", "19:00", "19:30", "20:00", "20:30", "21:00"];
 
 type TableState = "free" | "taken" | "too_small";
 type TableOption = {
@@ -65,6 +65,10 @@ export function ReservationExperience() {
   const [tableId, setTableId] = useState("");
   const [holdMinutes, setHoldMinutes] = useState(90);
   const [availabilityReady, setAvailabilityReady] = useState(false);
+  const [availabilityClosed, setAvailabilityClosed] = useState(false);
+  const [reservationsEnabled, setReservationsEnabled] = useState(true);
+  const [slots, setSlots] = useState<string[]>(FALLBACK_TIMES);
+  const [startedAt] = useState(() => Date.now());
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
   const [hold, setHold] = useState<HoldResult | null>(null);
@@ -79,19 +83,35 @@ export function ReservationExperience() {
     if (!date) return;
     const controller = new AbortController();
     const params = new URLSearchParams({
-      house: houseId,
-      zone: space,
+      maison: houseId,
       date,
-      time,
-      guests: String(guests),
+      couverts: String(guests),
     });
     fetch(`/api/availability?${params}`, { signal: controller.signal })
       .then((response) => response.json())
-      .then((data: { configured?: boolean; holdMinutes?: number; tables?: TableOption[] }) => {
-        const next = data.tables ?? [];
+      .then((data: {
+        enabled?: boolean;
+        closed?: boolean;
+        hold_minutes?: number;
+        slots?: { time: string; past?: boolean; tables?: { id: string; zone: "salle" | "terrasse"; number: number; seats: number; free?: boolean; fits?: boolean }[] }[];
+      }) => {
+        setReservationsEnabled(data.enabled !== false);
+        setAvailabilityClosed(Boolean(data.closed));
+        setHoldMinutes(data.hold_minutes ?? 90);
+        const slotTimes = (data.slots ?? []).map((slot) => String(slot.time).slice(0, 5));
+        setSlots(slotTimes.length ? slotTimes : FALLBACK_TIMES);
+        const currentSlot = (data.slots ?? []).find((slot) => String(slot.time).slice(0, 5) === time);
+        const next: TableOption[] = (currentSlot?.tables ?? [])
+          .filter((table) => table.zone === space)
+          .map((table) => ({
+            id: table.id,
+            number: table.number,
+            seats: table.seats,
+            zone: table.zone,
+            state: !table.free ? "taken" : table.fits === false ? "too_small" : "free",
+          }));
         setTables(next);
-        setHoldMinutes(data.holdMinutes ?? 90);
-        setAvailabilityReady(Boolean(data.configured));
+        setAvailabilityReady(true);
         setTableId((current) =>
           next.some((table) => table.id === current && table.state === "free")
             ? current
@@ -122,26 +142,21 @@ export function ReservationExperience() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           house: houseId,
-          zone: space,
-          tableId,
+          table_id: tableId,
           date,
-          time,
+          start: time,
           guests,
           name,
           phone,
           email,
           note,
+          website: "",
+          startedAt,
         }),
       });
       const data = await response.json();
       if (!response.ok) {
-        setFormError(
-          data.error === "table_taken"
-            ? "Cette table vient d'être retenue. Choisissez-en une autre."
-            : data.error === "unconfigured"
-              ? "Les tables ne sont pas disponibles pour le moment."
-              : "La demande n'a pas pu être enregistrée.",
-        );
+        setFormError(typeof data.error === "string" ? data.error : "La demande n'a pas pu être enregistrée.");
         return;
       }
       setHold({
@@ -472,7 +487,7 @@ export function ReservationExperience() {
                             </p>
                             <LayoutGroup>
                             <div className="grid grid-cols-3 gap-2">
-                              {TIMES.map((t) => (
+                              {slots.map((t) => (
                                 <button
                                   key={t}
                                   type="button"
@@ -604,7 +619,15 @@ export function ReservationExperience() {
                         {holdMinutes} minutes à partir de {time}, puis la table
                         se libère.
                       </p>
-                      {!date ? (
+                      {!reservationsEnabled ? (
+                        <p className="mt-5 text-sm text-ink-muted">
+                          Les réservations en ligne ne sont pas disponibles pour le moment. Appelez le {house.phone}.
+                        </p>
+                      ) : availabilityClosed ? (
+                        <p className="mt-5 text-sm text-ink-muted">
+                          Fermé ce jour-là.
+                        </p>
+                      ) : !date ? (
                         <p className="mt-5 text-sm text-ink-muted">
                           Choisissez d&apos;abord une date.
                         </p>

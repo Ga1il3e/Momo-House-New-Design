@@ -1,3 +1,4 @@
+import type { House } from "@/lib/house";
 import type { HouseId } from "./houses";
 
 export type DishCard = {
@@ -566,6 +567,37 @@ export const cartes: Record<HouseId, CarteData> = {
     ],
     drinks: sharedDrinks,
   },
+};
+
+export type MenuDish = {
+  id: string;
+  name: string;
+  nameAlt: string | null;
+  description: string | null;
+  priceCents: number;
+  imageUrl: string | null;
+  available: boolean;
+  orderable: boolean;
+  featured: boolean;
+  spiceLevel: number;
+  tags: string[];
+  allergens: string[];
+  categoryId: string;
+};
+
+export type MenuCategory = {
+  id: string;
+  name: string;
+  nameAlt: string | null;
+  slug: string;
+  isDrinks: boolean;
+  dishes: MenuDish[];
+};
+
+export type PublicMenu = {
+  house: House;
+  categories: MenuCategory[];
+  featured: MenuDish[];
 };
 
 export function tagClass(tone: DishCard["tagTone"]): string {

@@ -1,7 +1,7 @@
 import type { HouseId } from "@/lib/houses";
 
 export type TableZone = "salle" | "terrasse";
-export type ReservationStatus = "held" | "released" | "blocked";
+export type ReservationStatus = "held" | "released" | "blocked" | "confirmed" | "cancelled" | "no_show";
 
 export type DiningTable = {
   id: string;
