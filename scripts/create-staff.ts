@@ -29,15 +29,20 @@ if (role === "staff" && !isHouse(house)) {
   process.exit(1);
 }
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.SUPABASE_SECRET_KEY;
-if (!url || !key) {
-  console.error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SECRET_KEY.");
-  process.exit(1);
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    console.error(`Missing ${name}.`);
+    process.exit(1);
+  }
+  return value;
 }
 
+const supabaseUrl = requireEnv("NEXT_PUBLIC_SUPABASE_URL");
+const supabaseKey = requireEnv("SUPABASE_SECRET_KEY");
+
 async function main() {
-  const admin = createClient(url, key, {
+  const admin = createClient(supabaseUrl, supabaseKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const password = randomBytes(12).toString("base64url");
