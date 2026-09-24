@@ -1,6 +1,7 @@
 import { Be_Vietnam_Pro, Epilogue, Space_Grotesk } from "next/font/google";
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/SiteShell";
+import { getSiteSettings } from "@/lib/site-home";
 import "./globals.css";
 
 const epilogue = Epilogue({
@@ -31,11 +32,12 @@ export const metadata: Metadata = {
     "Momos faits main, thukpa fumant et achar maison — Maison Montmartre (2e) & Maison Poissonnière (10e).",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const site = await getSiteSettings();
   return (
     <html
       lang="fr"
@@ -46,7 +48,12 @@ export default function RootLayout({
         className="min-h-full flex flex-col font-body bg-paper text-ink"
         suppressHydrationWarning
       >
-        <SiteShell>{children}</SiteShell>
+        <SiteShell
+          homeBannerLeft={site.homeBannerLeft}
+          homeBannerRight={site.homeBannerRight}
+        >
+          {children}
+        </SiteShell>
       </body>
     </html>
   );

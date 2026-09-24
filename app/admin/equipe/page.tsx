@@ -1,5 +1,6 @@
 import { Toaster } from "sonner";
 import { requireOwner } from "@/lib/auth/staff";
+import { OwnerShell } from "@/components/admin/OwnerShell";
 import { isHouse, type House } from "@/lib/house";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createStaffClient } from "@/lib/supabase/server";
@@ -20,12 +21,8 @@ export default async function EquipePage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 px-4 py-10">
+    <OwnerShell title="Équipe">
       <Toaster position="top-right" />
-      <header>
-        <p className="font-label text-xs font-bold uppercase tracking-[1.5px] text-burgundy">Propriétaire</p>
-        <h1 className="font-display text-3xl font-extrabold">Équipe</h1>
-      </header>
       <EquipeClient
         selfId={staff.userId}
         members={(members ?? []).map((member) => ({
@@ -37,6 +34,6 @@ export default async function EquipePage() {
           last_sign_in: emails.get(member.user_id)?.last ?? null,
         }))}
       />
-    </div>
+    </OwnerShell>
   );
 }

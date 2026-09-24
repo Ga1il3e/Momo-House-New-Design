@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireOwner } from "@/lib/auth/staff";
+import { OwnerShell } from "@/components/admin/OwnerShell";
 import { HOUSE_LABEL, HOUSE_ORDER } from "@/lib/house";
 import { createStaffClient } from "@/lib/supabase/server";
 import { euro } from "@/lib/money";
@@ -12,11 +13,7 @@ export default async function MaisonsPage() {
   const byHouse = new Map((data ?? []).map((row) => [row.house, row]));
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 px-4 py-10">
-      <header>
-        <p className="font-label text-xs font-bold uppercase tracking-[1.5px] text-burgundy">Propriétaire</p>
-        <h1 className="font-display text-3xl font-extrabold">Maisons</h1>
-      </header>
+    <OwnerShell title="Maisons">
       <div className="grid gap-4 md:grid-cols-2">
         {HOUSE_ORDER.map((house) => {
           const dash = byHouse.get(house);
@@ -38,6 +35,6 @@ export default async function MaisonsPage() {
           );
         })}
       </div>
-    </div>
+    </OwnerShell>
   );
 }

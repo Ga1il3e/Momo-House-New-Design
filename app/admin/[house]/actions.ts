@@ -28,6 +28,9 @@ function refresh(house: House) {
   revalidatePath(`/admin/${house}/reglages`);
   updateTag(`house:${house}`);
   updateTag(`menu:${house}`);
+  updateTag("site");
+  revalidatePath("/");
+  revalidatePath("/admin/marque");
 }
 
 async function staffClient(house: string) {
@@ -306,6 +309,9 @@ export async function saveSiteEmail(email: string) {
   if (!supabase) return { error: "unconfigured" };
   const { error } = await supabase.from("site_settings").update({ contact_email: email }).eq("id", true);
   if (error) return { error: frenchError(error) };
+  updateTag("site");
+  revalidatePath("/");
+  revalidatePath("/admin/marque");
   return { ok: true };
 }
 

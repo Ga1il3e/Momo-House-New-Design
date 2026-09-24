@@ -19,7 +19,7 @@ type Banner = {
   image_url: string;
 };
 
-async function resizeWebp(file: File) {
+export async function resizeWebp(file: File) {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement("canvas");
@@ -80,7 +80,7 @@ export function EventsClient({ house, banners }: { house: House; banners: Banner
   );
 }
 
-function BannerForm({
+export function BannerForm({
   house,
   banner,
   pending,

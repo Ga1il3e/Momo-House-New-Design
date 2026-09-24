@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       activity_log: {
@@ -109,7 +134,7 @@ export type Database = {
           deleted_at: string | null
           email: string
           handled_by: string | null
-          house: Database["public"]["Enums"]["house_id"] | null
+          house: Database["public"]["Enums"]["house_id"]
           id: string
           message: string
           name: string
@@ -123,7 +148,7 @@ export type Database = {
           deleted_at?: string | null
           email: string
           handled_by?: string | null
-          house?: Database["public"]["Enums"]["house_id"] | null
+          house: Database["public"]["Enums"]["house_id"]
           id?: string
           message: string
           name: string
@@ -137,7 +162,7 @@ export type Database = {
           deleted_at?: string | null
           email?: string
           handled_by?: string | null
-          house?: Database["public"]["Enums"]["house_id"] | null
+          house?: Database["public"]["Enums"]["house_id"]
           id?: string
           message?: string
           name?: string
@@ -825,16 +850,25 @@ export type Database = {
       site_settings: {
         Row: {
           contact_email: string
+          featured_dish_ids: string[]
+          home_banner_left: string | null
+          home_banner_right: string | null
           id: boolean
           updated_at: string
         }
         Insert: {
           contact_email?: string
+          featured_dish_ids?: string[]
+          home_banner_left?: string | null
+          home_banner_right?: string | null
           id?: boolean
           updated_at?: string
         }
         Update: {
           contact_email?: string
+          featured_dish_ids?: string[]
+          home_banner_left?: string | null
+          home_banner_right?: string | null
           id?: boolean
           updated_at?: string
         }
@@ -1326,6 +1360,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       checkout_intent_status: [

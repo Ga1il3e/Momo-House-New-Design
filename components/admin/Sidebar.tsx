@@ -88,7 +88,7 @@ export function Sidebar({
               Équipe
             </Link>
             <Link href="/admin/marque" className="rounded-xl px-3 py-2.5 font-label text-sm hover:bg-paper-soft">
-              Marque
+              Site
             </Link>
           </>
         ) : null}
