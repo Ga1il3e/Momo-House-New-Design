@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { TopBanner } from "@/components/TopBanner";
+import { ZenchefWidget } from "@/components/ZenchefWidget";
 import type { HouseId } from "@/lib/houses";
 
 function resolveChrome(pathname: string): {
@@ -51,19 +53,36 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { variant, activeHouse, bannerLeft, bannerRight } =
     resolveChrome(pathname);
+  const isCarte = pathname === "/carte" || pathname.endsWith("/carte");
+
+  useEffect(() => {
+    if (!isCarte) return;
+    const html = document.documentElement;
+    const previousHtml = html.style.overflow;
+    const previousBody = document.body.style.overflow;
+    html.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    return () => {
+      html.style.overflow = previousHtml;
+      document.body.style.overflow = previousBody;
+    };
+  }, [isCarte]);
 
   return (
     <>
-      <TopBanner
-        variant={variant === "home" ? "home" : "house"}
-        left={bannerLeft}
-        right={bannerRight}
-      />
+      {!isCarte && (
+        <TopBanner
+          variant={variant === "home" ? "home" : "house"}
+          left={bannerLeft}
+          right={bannerRight}
+        />
+      )}
       <Header variant={variant} activeHouse={activeHouse} />
       <main className="flex flex-1 flex-col">
         <PageTransition>{children}</PageTransition>
       </main>
-      <Footer />
+      {!isCarte && <Footer />}
+      {!isCarte && <ZenchefWidget />}
     </>
   );
 }

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { CartePage } from "@/components/CartePage";
+import { CarteFlipbook } from "@/components/flipbook/CarteFlipbook";
 
 export const metadata: Metadata = {
   title: "La Carte — Poissonnière",
   description:
-    "La carte des saveurs himalayennes à Momo House Poissonnière : momos, thukpa, achar et streetfood.",
+    "La carte de Momo House Poissonnière : momos vapeur, kothey, jhol, formule midi, boissons et desserts.",
 };
 
 export default function PoissonniereCartePage() {
-  return <CartePage houseId="poissonniere" />;
+  return <CarteFlipbook houseLabel="Maison Poissonnière" />;
 }

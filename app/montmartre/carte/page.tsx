@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { CartePage } from "@/components/CartePage";
+import { CarteFlipbook } from "@/components/flipbook/CarteFlipbook";
 
 export const metadata: Metadata = {
   title: "La Carte — Montmartre",
   description:
-    "La carte des saveurs himalayennes à Momo House Montmartre : momos, thukpa, achar et streetfood.",
+    "La carte de Momo House Montmartre : momos vapeur, kothey, jhol, formule midi, boissons et desserts.",
 };
 
 export default function MontmartreCartePage() {
-  return <CartePage houseId="montmartre" />;
+  return <CarteFlipbook houseLabel="Maison Montmartre" />;
 }

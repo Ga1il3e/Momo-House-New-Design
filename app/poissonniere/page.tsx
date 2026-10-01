@@ -1,46 +1,15 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, LayoutGroup, motion } from "motion/react";
-import { useMemo, useState } from "react";
-import { DishCard } from "@/components/DishCard";
+import { CarteFlipbook } from "@/components/flipbook/CarteFlipbook";
 import { Icon } from "@/components/Icon";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { HoverLift } from "@/components/motion/HoverLift";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
-import {
-  easeOut,
-  usePrefersReducedMotion,
-} from "@/components/motion/usePrefersReducedMotion";
 import { ReservationCta } from "@/components/ReservationCta";
 import { houses } from "@/lib/houses";
-import { poissonniereSpecialties } from "@/lib/menu";
-
-const filters = [
-  { id: "all", label: "TOUS" },
-  { id: "momo", label: "MOMOS" },
-  { id: "accompagnements", label: "PLATS" },
-  { id: "boissons", label: "BOISSONS" },
-] as const;
 
 export default function PoissonnierePage() {
   const house = houses.poissonniere;
-  const reduced = usePrefersReducedMotion();
-  const [filter, setFilter] = useState<(typeof filters)[number]["id"]>("all");
-
-  const dishes = useMemo(() => {
-    if (filter === "all") return poissonniereSpecialties;
-    if (filter === "momo") {
-      return poissonniereSpecialties.filter((d) => d.category === "momo");
-    }
-    if (filter === "accompagnements") {
-      return poissonniereSpecialties.filter(
-        (d) => d.category === "accompagnements",
-      );
-    }
-    return poissonniereSpecialties.filter((d) => d.category === "boissons");
-  }, [filter]);
 
   return (
     <>
@@ -191,84 +160,8 @@ export default function PoissonnierePage() {
         </Stagger>
       </section>
 
-      {/* Carte preview */}
-      <section className="px-4 py-16 sm:px-12">
-        <div className="mx-auto max-w-[1280px]">
-          <FadeIn className="mb-8 max-w-3xl">
-            <span className="font-label text-xs font-bold uppercase tracking-wide text-burgundy">
-              FAITS MAIN CHAQUE MATIN
-            </span>
-            <h2 className="font-display mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              La Carte Spécialités de Poissonnière
-            </h2>
-            <p className="mt-3 text-ink-muted">
-              Pliés à la main à l&apos;aube, servis avec nos sauces maison
-              Achar aux tomates rôties et sésame noir.
-            </p>
-          </FadeIn>
-
-          <LayoutGroup>
-            <div className="mb-8 flex flex-wrap gap-2">
-              {filters.map((f) => {
-                const active = filter === f.id;
-                return (
-                  <button
-                    key={f.id}
-                    type="button"
-                    onClick={() => setFilter(f.id)}
-                    className={`relative min-h-11 rounded-full px-4 py-2 font-label text-xs font-bold uppercase tracking-wide transition ${
-                      active
-                        ? "text-white"
-                        : "bg-paper-soft text-ink-muted hover:bg-paper-muted"
-                    }`}
-                  >
-                    {active && (
-                      <motion.span
-                        layoutId="pois-filter"
-                        className="absolute inset-0 rounded-full bg-burgundy"
-                        transition={{
-                          type: "spring",
-                          stiffness: 420,
-                          damping: 32,
-                        }}
-                      />
-                    )}
-                    <span className="relative z-10">{f.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </LayoutGroup>
-
-          <motion.div layout className="grid gap-6 md:grid-cols-2">
-            <AnimatePresence mode="popLayout">
-              {dishes.map((dish) => (
-                <motion.div
-                  key={dish.id}
-                  layout
-                  initial={reduced ? false : { opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={reduced ? undefined : { opacity: 0, scale: 0.96 }}
-                  transition={{
-                    duration: reduced ? 0.01 : 0.35,
-                    ease: easeOut,
-                  }}
-                >
-                  <DishCard dish={dish} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-
-          <FadeIn className="mt-10 text-center">
-            <Link
-              href="/poissonniere/carte"
-              className="btn-burgundy inline-flex px-6 py-3 text-sm"
-            >
-              VOIR LA CARTE COMPLÈTE
-            </Link>
-          </FadeIn>
-        </div>
+      <section aria-label="La Carte" className="overflow-hidden bg-[#0c0407]">
+        <CarteFlipbook houseLabel="Maison Poissonnière" embedded />
       </section>
 
       <ReservationCta

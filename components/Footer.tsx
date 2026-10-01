@@ -8,7 +8,7 @@ import { houses, type House } from "@/lib/houses";
 
 const quickNav = [
   { href: "/", label: "Accueil" },
-  { href: "/#maisons", label: "La Carte — choisir une maison" },
+  { href: "/carte", label: "La Carte" },
   { href: "/#maisons", label: "Plan d'accès & Itinéraires" },
   { href: "/#histoire", label: "Secrets de fabrication des Momos" },
   { href: "/reservation", label: "Réservation en ligne" },

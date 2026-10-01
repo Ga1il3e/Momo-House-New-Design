@@ -79,7 +79,10 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
   const reduced = usePrefersReducedMotion();
   const isHouse = variant === "house" && Boolean(activeHouse);
 
-  const homeNav = [{ href: "/#histoire", label: "NOTRE HISTOIRE" }];
+  const homeNav = [
+    { href: "/carte", label: "LA CARTE" },
+    { href: "/#histoire", label: "NOTRE HISTOIRE" },
+  ];
 
   const houseNav = [
     {
@@ -159,15 +162,23 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
         {/* Right: nav + CTA + menu */}
         <div className="flex items-center justify-end gap-2 sm:gap-3">
           <nav className="hidden items-center gap-6 lg:flex xl:gap-8">
-            {nav.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="font-label text-sm font-medium uppercase tracking-wide text-ink-muted transition duration-200 hover:text-burgundy"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {nav.map((item) => {
+              const active =
+                item.href === "/carte"
+                  ? pathname === "/carte" || pathname.endsWith("/carte")
+                  : pathname === item.href;
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={`font-label text-sm font-medium uppercase tracking-wide transition duration-200 hover:text-burgundy ${
+                    active ? "text-burgundy" : "text-ink-muted"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
           <Link
             href={reserveHref}

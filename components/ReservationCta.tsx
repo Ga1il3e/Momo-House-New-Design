@@ -15,7 +15,7 @@ type ReservationCtaProps = {
 export function ReservationCta({
   houseId,
   title = "Réserver une table chez Momo House",
-  subtitle = "Choisissez Montmartre ou Poissonnière, votre créneau et le nombre de convives.",
+  subtitle = "Choisissez Montmartre ou Poissonnière. La réservation en ligne s'ouvre ici — ou appelez la maison.",
 }: ReservationCtaProps) {
   const href = houseId
     ? `/reservation?maison=${houseId}`

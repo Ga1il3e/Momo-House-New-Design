@@ -1,14 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { DualPortalHero } from "@/components/DualPortalHero";
-import { DishCard } from "@/components/DishCard";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { HoverLift } from "@/components/motion/HoverLift";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { Icon } from "@/components/Icon";
 import { ReservationCta } from "@/components/ReservationCta";
 import { houses } from "@/lib/houses";
-import { homepageDishes } from "@/lib/menu";
 
 export default function HomePage() {
   return (
@@ -89,7 +87,7 @@ export default function HomePage() {
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link
-              href="/#maisons"
+              href="/carte"
               className="btn-burgundy inline-flex items-center gap-2 px-6 py-3 text-sm"
             >
               DÉCOUVRIR LA CARTE
@@ -105,30 +103,6 @@ export default function HomePage() {
             </p>
           </div>
         </FadeIn>
-      </section>
-
-      <section className="border-y border-[rgba(228,190,186,0.2)] bg-paper-soft px-4 py-20 sm:px-12">
-        <div className="mx-auto max-w-[1280px]">
-          <FadeIn className="mx-auto mb-14 max-w-2xl text-center">
-            <span className="inline-flex rounded-full bg-cream-blush px-3 py-1 font-label text-sm font-medium uppercase tracking-[0.8px] text-[#410003]">
-              MENU ARTISANAL
-            </span>
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Les Incontournables de la Maison
-            </h2>
-            <p className="mt-3 text-ink-muted">
-              Servis par portions de 8 ou 10 pièces avec notre achar maison aux
-              tomates rôties et graines de sésame noir.
-            </p>
-          </FadeIn>
-          <Stagger className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {homepageDishes.map((dish) => (
-              <StaggerItem key={dish.id}>
-                <DishCard dish={dish} />
-              </StaggerItem>
-            ))}
-          </Stagger>
-        </div>
       </section>
 
       <section id="maisons" className="px-4 py-20 sm:px-12">
