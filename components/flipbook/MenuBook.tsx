@@ -51,12 +51,13 @@ function fitOpenPages(stage: HTMLElement) {
 }
 
 function measure(width: number, height: number): BookSize {
-  if (width < 820) {
+  const spread = width >= 760 && height >= 560;
+  if (!spread) {
     const ph = Math.max(300, height - 132);
     const pw = Math.min(Math.max(width - 24, 240), 460);
     return { pw: Math.round(pw), ph: Math.round(ph), mobile: true };
   }
-  const pw = Math.min(Math.round((height - 150) / 1.42), Math.round((width - 150) / 2), 472);
+  const pw = Math.min(Math.round((height - 150) / 1.42), Math.round((width - 80) / 2), 472);
   const ph = Math.min(height - 150, Math.round(pw * 1.42));
   return { pw, ph, mobile: false };
 }
@@ -202,11 +203,19 @@ export function MenuBook({ booted }: { booted: boolean }) {
     size.mobile ? null : index === 0 || index === total - 1 ? null : index % 2 === 1 ? "left" : "right";
 
   return (
-    <div className="book-stage" id="book-stage" ref={stageRef} data-testid="book-stage">
+    <div
+      className={`book-stage ${size.mobile ? "is-single" : "is-spread"}`}
+      id="book-stage"
+      ref={stageRef}
+      data-testid="book-stage"
+    >
       <div className="book-glow" aria-hidden="true" />
-      <div className="book-frame" style={{ width: size.pw, height: size.ph }}>
+      <div
+        className="book-frame"
+        style={{ width: size.mobile ? size.pw : size.pw * 2, height: size.ph }}
+      >
       <HTMLFlipBook
-        key={`${size.pw}x${size.ph}`}
+        key={`${size.pw}x${size.ph}-${size.mobile ? "single" : "spread"}`}
         ref={bookRef}
         className="flipbook"
         style={{}}
@@ -222,7 +231,7 @@ export function MenuBook({ booted }: { booted: boolean }) {
         useMouseEvents
         disableFlipByClick={false}
         showCover
-        usePortrait
+        usePortrait={size.mobile}
         drawShadow
         maxShadowOpacity={0.55}
         showPageCorners={!size.mobile}

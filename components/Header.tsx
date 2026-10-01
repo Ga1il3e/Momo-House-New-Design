@@ -125,42 +125,26 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-[rgba(228,190,186,0.35)] bg-paper/95 backdrop-blur-md">
-      <div className="mx-auto grid max-w-[1280px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2.5 sm:gap-4 sm:px-12 sm:py-3">
-        {/* Left: logo */}
-        <div className="flex min-w-0 items-center justify-start">
-          <Link href="/" className="flex shrink-0 items-center">
-            <Image
-              src="/assets/logo-wordmark.png"
-              alt="Momo House"
-              width={140}
-              height={72}
-              priority
-              className={`h-auto w-auto object-contain ${
-                isHouse ? "h-9 sm:h-11" : "h-10 sm:h-[3.75rem]"
-              }`}
-            />
-          </Link>
+      <div className="relative mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-3 py-2 sm:px-12 sm:py-3">
+        <Link href="/" className="relative z-10 flex shrink-0 items-center">
+          <Image
+            src="/assets/logo-wordmark.png"
+            alt="Momo House"
+            width={140}
+            height={72}
+            priority
+            className="h-11 w-auto max-w-[92px] object-contain object-left sm:h-14 sm:max-w-[120px] lg:h-[3.75rem] lg:max-w-[148px]"
+          />
+        </Link>
+
+        <div className="absolute left-1/2 hidden -translate-x-1/2 md:block">
+          <HouseSwitcher
+            montmartreActive={montmartreActive}
+            poissonniereActive={poissonniereActive}
+          />
         </div>
 
-        {/* Center: maisons */}
-        <div className="flex justify-center px-1">
-          <div className="sm:hidden">
-            <HouseSwitcher
-              montmartreActive={montmartreActive}
-              poissonniereActive={poissonniereActive}
-              compact
-            />
-          </div>
-          <div className="hidden sm:block">
-            <HouseSwitcher
-              montmartreActive={montmartreActive}
-              poissonniereActive={poissonniereActive}
-            />
-          </div>
-        </div>
-
-        {/* Right: nav + CTA + menu */}
-        <div className="flex items-center justify-end gap-2 sm:gap-3">
+        <div className="relative z-10 flex shrink-0 items-center justify-end gap-2 sm:gap-3">
           <nav className="hidden items-center gap-6 lg:flex xl:gap-8">
             {nav.map((item) => {
               const active =
@@ -203,6 +187,13 @@ export function Header({ variant = "home", activeHouse }: HeaderProps) {
             <span className="font-label text-lg">{open ? "×" : "☰"}</span>
           </button>
         </div>
+      </div>
+
+      <div className="flex justify-center border-t border-[rgba(228,190,186,0.4)] px-3 py-2 md:hidden">
+        <HouseSwitcher
+          montmartreActive={montmartreActive}
+          poissonniereActive={poissonniereActive}
+        />
       </div>
 
       <AnimatePresence initial={false}>
