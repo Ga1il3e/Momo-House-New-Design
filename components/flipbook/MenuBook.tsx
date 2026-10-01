@@ -16,7 +16,13 @@ import {
   TrioPage,
 } from "./MenuPages";
 
-type BookSize = { pw: number; ph: number; mobile: boolean };
+type BookSize = { pw: number; ph: number; mobile: boolean; desktop: boolean };
+
+const DESKTOP_MIN_WIDTH = 1200;
+const DESKTOP_PAD_TOP = 64;
+const DESKTOP_PAD_BOTTOM = 96;
+const DESKTOP_PAD_X = 40;
+const DESKTOP_MAX_PAGE = 680;
 type PageFlipApi = {
   flipNext: () => void;
   flipPrev: () => void;
@@ -55,11 +61,20 @@ function measure(width: number, height: number): BookSize {
   if (!spread) {
     const ph = Math.max(300, height - 132);
     const pw = Math.min(Math.max(width - 24, 240), 460);
-    return { pw: Math.round(pw), ph: Math.round(ph), mobile: true };
+    return { pw: Math.round(pw), ph: Math.round(ph), mobile: true, desktop: false };
+  }
+  const desktop = width >= DESKTOP_MIN_WIDTH;
+  if (desktop) {
+    const innerH = Math.max(360, height - DESKTOP_PAD_TOP - DESKTOP_PAD_BOTTOM);
+    const innerW = Math.max(640, width - DESKTOP_PAD_X * 2);
+    let pw = Math.min(Math.round(innerW * 0.43), DESKTOP_MAX_PAGE);
+    if (innerH / pw < 1.12) pw = Math.round(innerH / 1.12);
+    const ph = Math.min(innerH, Math.round(pw * 1.42));
+    return { pw, ph, mobile: false, desktop: true };
   }
   const pw = Math.min(Math.round((height - 150) / 1.42), Math.round((width - 80) / 2), 472);
   const ph = Math.min(height - 150, Math.round(pw * 1.42));
-  return { pw, ph, mobile: false };
+  return { pw, ph, mobile: false, desktop: false };
 }
 
 function Chevron({ dir }: { dir: "left" | "right" }) {
@@ -109,7 +124,7 @@ export function MenuBook({ booted }: { booted: boolean }) {
   const saved = useRef(0);
   const cool = useRef(0);
   const [active, setActive] = useState(0);
-  const [size, setSize] = useState<BookSize>({ pw: 360, ph: 510, mobile: true });
+  const [size, setSize] = useState<BookSize>({ pw: 360, ph: 510, mobile: true, desktop: false });
   const total = PAGES.length;
 
   useEffect(() => {
@@ -204,7 +219,14 @@ export function MenuBook({ booted }: { booted: boolean }) {
 
   return (
     <div
-      className={`book-stage ${size.mobile ? "is-single" : "is-spread"}`}
+      className={`book-stage ${size.mobile ? "is-single" : "is-spread"}${size.desktop ? " is-desktop" : ""}`}
+      style={
+        size.desktop
+          ? {
+              padding: `${DESKTOP_PAD_TOP}px ${DESKTOP_PAD_X}px ${DESKTOP_PAD_BOTTOM}px`,
+            }
+          : undefined
+      }
       id="book-stage"
       ref={stageRef}
       data-testid="book-stage"

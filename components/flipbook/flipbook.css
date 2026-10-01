@@ -104,7 +104,7 @@
 
 .menu-flipbook .book-frame {
   position: relative;
-  max-width: calc(100% - 16px);
+  max-width: 100%;
   flex: 0 0 auto;
   overflow: hidden;
 }
